@@ -31,7 +31,7 @@ func TestLogin(t *testing.T) {
 			Name:          "Incorrect password",
 			Users:         []domain.User{domain.User{Username: "Nimk", Email: "nimk@mail.com", Password: "1234"}},
 			Input:         dto.LoginInput{UserID: 0, Password: "12345"},
-			ExpectedError: domain.ErrIncorrectPassword,
+			ExpectedError: domain.ErrUnauthorized,
 		},
 	}
 

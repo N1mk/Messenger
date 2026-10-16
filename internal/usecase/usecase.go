@@ -11,6 +11,7 @@ import (
 type UsecaseInterface interface {
 	Signup(input dto.SignupInput) (dto.SignupOutput, error)
 	Login(input dto.LoginInput) (dto.LoginOutput, error)
+	LoginByRefreshToken(input dto.LoginByRefreshTokenInput) (dto.LoginByRefreshTokenOutput, error)
 	DeleteAccount(input dto.DeleteAccountInput) (dto.DeleteAccountOutput, error)
 	CreateChat(input dto.CreateChatInput) (dto.CreateChatOutput, error)
 	DeleteChat(input dto.DeleteChatInput) (dto.DeleteChatOutput, error)

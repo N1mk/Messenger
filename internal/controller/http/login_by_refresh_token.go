@@ -1,0 +1,63 @@
+package http
+
+import (
+	"encoding/json"
+	"errors"
+	"fmt"
+	"messenger/internal/domain"
+	"messenger/internal/dto"
+	"net/http"
+	"strconv"
+
+	"github.com/go-chi/chi"
+)
+
+// loginByRefreshTokenRequestRequest defines signup request structure
+type loginByRefreshTokenRequest struct {
+	RefreshToken string `json:"refresh_token"`
+}
+
+// LoginByRefreshToken implements the login_by_refresh_token endpoint on the controller layer.
+// The method parses request structure and calls usecase.Usecase.LoginByRefreshStructure().
+func (c *HTTPController) LoginByRefreshToken(w http.ResponseWriter, r *http.Request) {
+	var req loginByRefreshTokenRequest
+
+	err := json.NewDecoder(r.Body).Decode(&req)
+	if err != nil {
+		http.Error(w, fmt.Sprintf("decoding error: %s", err.Error()), http.StatusBadRequest)
+		return
+	}
+	defer r.Body.Close()
+
+	userID, err := strconv.Atoi(chi.URLParam(r, "id"))
+	if err != nil {
+		http.Error(w, fmt.Sprintf("invalid id: %s", err.Error()), http.StatusBadRequest)
+		return
+	}
+
+	var input dto.LoginByRefreshTokenInput = dto.LoginByRefreshTokenInput{UserID: uint(userID), RefreshToken: req.RefreshToken}
+
+	if err := c.v.Struct(input); err != nil {
+		http.Error(w, fmt.Sprintf("validation error: %s", err.Error()), http.StatusBadRequest)
+		return
+	}
+
+	output, err := c.uc.LoginByRefreshToken(input)
+	if err != nil {
+		if errors.Is(err, domain.ErrUnauthorized) {
+			http.Error(w, "incorrect password", http.StatusBadRequest)
+			return
+		}
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+
+	w.WriteHeader(http.StatusOK)
+
+	if err := json.NewEncoder(w).Encode(output); err != nil {
+		http.Error(w, fmt.Sprintf("encoding error: %s", err.Error()), http.StatusInternalServerError)
+		return
+	}
+}

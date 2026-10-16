@@ -44,7 +44,7 @@ func (c *HTTPController) Login(w http.ResponseWriter, r *http.Request) {
 
 	output, err := c.uc.Login(input)
 	if err != nil {
-		if errors.Is(err, domain.ErrIncorrectPassword) {
+		if errors.Is(err, domain.ErrUnauthorized) {
 			http.Error(w, "incorrect password", http.StatusBadRequest)
 			return
 		}

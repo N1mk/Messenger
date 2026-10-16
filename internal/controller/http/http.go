@@ -13,6 +13,7 @@ import (
 type HTTPControllerInterface interface {
 	Signup(w http.ResponseWriter, r *http.Request)
 	Login(w http.ResponseWriter, r *http.Request)
+	LoginByRefreshToken(w http.ResponseWriter, r *http.Request)
 	GetChats(w http.ResponseWriter, r *http.Request)
 	GetMessages(w http.ResponseWriter, r *http.Request)
 	CreateChat(w http.ResponseWriter, r *http.Request)
@@ -25,7 +26,7 @@ type HTTPControllerInterface interface {
 type HTTPController struct {
 	r  *chi.Mux
 	v  *validator.Validate
-	uc *usecase.Usecase
+	uc usecase.UsecaseInterface
 }
 
 // NewHTTPController initializes HTTPController and returns pointer on it.
@@ -36,6 +37,7 @@ func NewHTTPController(uc *usecase.Usecase) *HTTPController {
 // DefineEndpoint is a method for definding all endpoints in chi router.
 func (c *HTTPController) DefindEndpoints() {
 	c.r.Get("/users/{id}/login", c.Login)
+	c.r.Get("/users/{id}/refresh", c.LoginByRefreshToken)
 	c.r.Get("/chats", c.GetChats)
 	c.r.Get("/chats/{id}/messages", c.GetMessages)
 	c.r.Post("/users", c.Signup)

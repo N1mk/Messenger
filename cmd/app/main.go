@@ -12,7 +12,7 @@ import (
 )
 
 func main() {
-	if err := godotenv.Load("secret_keys.env"); err != nil {
+	if err := godotenv.Load("secret.env"); err != nil {
 		fmt.Printf("FATAL ERROR: env variables loading error: %s", err.Error())
 		os.Exit(1)
 	}

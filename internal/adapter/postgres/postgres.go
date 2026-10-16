@@ -4,6 +4,7 @@ package postgres
 import (
 	"fmt"
 	"messenger/internal/domain"
+	"messenger/pkg/jwt"
 	"os"
 
 	"gorm.io/driver/postgres"
@@ -25,6 +26,10 @@ type PostgresInterface interface {
 	UpdateChat(chat *domain.Chat) error
 
 	GetMessages(chatID uint) ([]domain.Message, error)
+
+	RefreshTokenExists(token jwt.RefreshToken) (ok bool, err error)
+	CreateRefreshToken(token jwt.RefreshToken) error
+	RemoveRefreshToken(token jwt.RefreshToken) error
 }
 
 // Postgres implements PostgresInterface and containts *gorm.DB for work with postgres databases.
@@ -36,7 +41,7 @@ type Postgres struct {
 // The function returns pointer on Postgres struct and error.
 func NewPostgres(dsn string) (*Postgres, error) {
 	if dsn == "" {
-		dsn = os.Getenv("JWT_SIG_KEY")
+		dsn = os.Getenv("DEFAULT_DSN")
 		if dsn == "" {
 			return nil, fmt.Errorf("no default dsn in env variables")
 		}
@@ -47,7 +52,7 @@ func NewPostgres(dsn string) (*Postgres, error) {
 		return nil, err
 	}
 
-	db.AutoMigrate(&domain.User{}, &domain.Chat{}, &domain.Message{})
+	db.AutoMigrate(&domain.User{}, &domain.Chat{}, &domain.Message{}, &jwt.RefreshToken{})
 
 	return &Postgres{db: db}, nil
 }
