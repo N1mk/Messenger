@@ -1,0 +1,79 @@
+[
+  {
+    "name": "signup",
+    "inputFields": [
+      "Username string `json:\"username\" validate:\"required,max=20\"`",
+      "Email string `json:\"email\" validate:\"required,email\"`",
+      "Password string `json:\"password\" validate:\"required,min=6,max=20\"`"
+    ],
+    "outputFields": [
+      "ID uint `json:\"id\"`",
+      "JWTToken string `json:\"jwt-token\"`"
+    ]
+  },
+  {
+    "name": "login",
+    "inputFields": [
+      "Username string `json:\"username\" validate:\"required,max=20\"`",
+      "Password string `json:\"password\" validate:\"required,min=6,max=20\"`"
+    ],
+    "outputFields": [
+      "ID uint `json:\"id\"`",
+      "JWTToken string `json:\"jwt-token\"`"
+    ]
+  },
+  {
+    "name": "get chats",
+    "inputFields": [
+      "UserID uint `json:\"user_id\" validate:\"required\"`"
+    ],
+    "outputFields": [
+      "Chats []*domain.Chat `json:\"chats\"`"
+    ]
+  },
+  {
+    "name": "get messages",
+    "inputFields": [
+      "UserID uint `json:\"user_id\" validate:\"required\"`",
+      "ChatID uint `json:\"chat_id\" validate:\"required\"`"
+    ],
+    "outputFields": [
+      "Messages []*domain.Message `json:\"messages\" gorm:\"type:jsonb\"`"
+    ]
+  },
+  {
+    "name": "create chat",
+    "inputFields": [
+      "CreatorID uint `json:\"user_id\" validate:\"required\"`",
+      "Usernames []string `json:\"usernames\" validate:\"required\"`",
+      "Name string `json:\"name\" validate:\"required,max=20\"`"
+    ],
+    "outputFields": [
+      "ChatID uint `json:\"chat_id\"`"
+    ]
+  },
+  {
+    "name": "send message",
+    "inputFields": [
+      "UserID uint `json:\"user_id\" validate:\"required\"`",
+      "ChatID uint `json:\"chat_id\" validate:\"required\"`",
+      "Text string `json:\"text\" validate:\"required,max=800\"`"
+    ],
+    "outputFields": []
+  },
+  {
+    "name": "delete chat",
+    "inputFields": [
+      "UserID uint `json:\"user_id\" validate:\"required\"`",
+      "ChatID uint `json:\"chat_id\" validate:\"required\"`"
+    ],
+    "outputFields": []
+  },
+  {
+    "name": "delete account",
+    "inputFields": [
+      "UserID uint `json:\"user_id\" validate:\"required\"`"
+    ],
+    "outputFields": []
+  }
+]

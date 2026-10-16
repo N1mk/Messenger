@@ -1,0 +1,69 @@
+package http
+
+import (
+	"encoding/json"
+	"errors"
+	"fmt"
+	"messenger/internal/domain"
+	"messenger/internal/dto"
+	"net/http"
+	"strconv"
+
+	"github.com/go-chi/chi"
+)
+
+// sendMessageRequest defines signup request structure
+type sendMessageRequest struct {
+	UserID uint   `json:"user_id" validate:"required"`
+	Text   string `json:"text" validate:"required,max=800"`
+}
+
+// SendMessage implements the send_message endpoint on the controller layer.
+// The method parses request structure and calls usecase.Usecase.SendMessage().
+func (c *HTTPController) SendMessage(w http.ResponseWriter, r *http.Request) {
+	isIdentified := r.Context().Value("is_identified").(bool)
+	if !isIdentified {
+		http.Error(w, "not identified", http.StatusUnauthorized)
+		return
+	}
+
+	var req sendMessageRequest
+
+	err := json.NewDecoder(r.Body).Decode(&req)
+	if err != nil {
+		http.Error(w, fmt.Sprintf("decoding error: %s", err.Error()), http.StatusBadRequest)
+		return
+	}
+	defer r.Body.Close()
+
+	chatID, err := strconv.Atoi(chi.URLParam(r, "id"))
+	if err != nil {
+		http.Error(w, fmt.Sprintf("invalid id: %s", err.Error()), http.StatusBadRequest)
+		return
+	}
+
+	var input dto.SendMessageInput = dto.SendMessageInput{UserID: req.UserID, ChatID: uint(chatID), Text: req.Text}
+
+	output, err := c.uc.SendMessage(input)
+	if err != nil {
+		if errors.Is(err, domain.ErrUserIsNotInChat) {
+			http.Error(w, "you is not in the chat", http.StatusForbidden)
+			return
+		}
+		if errors.Is(err, domain.ErrNotFound) {
+			http.Error(w, "not found", http.StatusNotFound)
+			return
+		}
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+
+	w.WriteHeader(http.StatusCreated)
+
+	if err := json.NewEncoder(w).Encode(output); err != nil {
+		http.Error(w, fmt.Sprintf("encoding error: %s", err.Error()), http.StatusInternalServerError)
+		return
+	}
+}
