@@ -34,7 +34,7 @@ func (u *Usecase) CreateChat(input dto.CreateChatInput) (dto.CreateChatOutput, e
 		users = append(users, *user)
 	}
 
-	chat, err := u.postgres.CreateChat(domain.Chat{Name: input.Name, Users: users})
+	chat, err := u.postgres.CreateChat(domain.Chat{Name: input.Name, Owner: *creator, Users: users})
 	if err != nil {
 		return dto.CreateChatOutput{}, fmt.Errorf("chat creation error: %w", err)
 	}
