@@ -31,6 +31,11 @@ func (c *HTTPController) DeleteChat(w http.ResponseWriter, r *http.Request) {
 
 	var input dto.DeleteChatInput = dto.DeleteChatInput{UserID: userID, ChatID: uint(chatID)}
 
+	if err := c.v.Struct(input); err != nil {
+		http.Error(w, fmt.Sprintf("validation error: %s", err.Error()), http.StatusBadRequest)
+		return
+	}
+
 	output, err := c.uc.DeleteChat(input)
 	if err != nil {
 		if errors.Is(err, domain.ErrUserIsNotInChat) {

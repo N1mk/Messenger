@@ -31,6 +31,11 @@ func (c *HTTPController) GetMessages(w http.ResponseWriter, r *http.Request) {
 
 	var input dto.GetMessagesInput = dto.GetMessagesInput{UserID: userID, ChatID: uint(chatID)}
 
+	if err := c.v.Struct(input); err != nil {
+		http.Error(w, fmt.Sprintf("validation error: %s", err.Error()), http.StatusBadRequest)
+		return
+	}
+
 	output, err := c.uc.GetMessages(input)
 	if err != nil {
 		if errors.Is(err, domain.ErrUserIsNotInChat) {

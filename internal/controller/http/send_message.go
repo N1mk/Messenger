@@ -44,6 +44,11 @@ func (c *HTTPController) SendMessage(w http.ResponseWriter, r *http.Request) {
 
 	var input dto.SendMessageInput = dto.SendMessageInput{UserID: req.UserID, ChatID: uint(chatID), Text: req.Text}
 
+	if err := c.v.Struct(input); err != nil {
+		http.Error(w, fmt.Sprintf("validation error: %s", err.Error()), http.StatusBadRequest)
+		return
+	}
+
 	output, err := c.uc.SendMessage(input)
 	if err != nil {
 		if errors.Is(err, domain.ErrUserIsNotInChat) {

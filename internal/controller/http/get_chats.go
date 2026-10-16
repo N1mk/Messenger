@@ -25,6 +25,11 @@ func (c *HTTPController) GetChats(w http.ResponseWriter, r *http.Request) {
 
 	var input dto.GetChatsInput = dto.GetChatsInput{UserID: userID}
 
+	if err := c.v.Struct(input); err != nil {
+		http.Error(w, fmt.Sprintf("validation error: %s", err.Error()), http.StatusBadRequest)
+		return
+	}
+
 	output, err := c.uc.GetChats(input)
 	if err != nil {
 		if errors.Is(err, domain.ErrNotFound) {

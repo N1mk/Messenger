@@ -22,6 +22,11 @@ func (c *HTTPController) DeleteAccount(w http.ResponseWriter, r *http.Request) {
 
 	var input dto.DeleteAccountInput = dto.DeleteAccountInput{UserID: userID}
 
+	if err := c.v.Struct(input); err != nil {
+		http.Error(w, fmt.Sprintf("validation error: %s", err.Error()), http.StatusBadRequest)
+		return
+	}
+
 	output, err := c.uc.DeleteAccount(input)
 	if err != nil {
 		if errors.Is(err, domain.ErrNotFound) {

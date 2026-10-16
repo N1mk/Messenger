@@ -26,6 +26,11 @@ func (c *HTTPController) Signup(w http.ResponseWriter, r *http.Request) {
 
 	var input dto.SignupInput = req
 
+	if err := c.v.Struct(input); err != nil {
+		http.Error(w, fmt.Sprintf("validation error: %s", err.Error()), http.StatusBadRequest)
+		return
+	}
+
 	output, err := c.uc.Signup(input)
 	if err != nil {
 		if errors.Is(err, domain.ErrDuplicated) {

@@ -35,6 +35,11 @@ func (c *HTTPController) CreateChat(w http.ResponseWriter, r *http.Request) {
 
 	var input dto.CreateChatInput = dto.CreateChatInput{CreatorID: creatorID, Usernames: req.Usernames, Name: req.Name}
 
+	if err := c.v.Struct(input); err != nil {
+		http.Error(w, fmt.Sprintf("validation error: %s", err.Error()), http.StatusBadRequest)
+		return
+	}
+
 	output, err := c.uc.CreateChat(input)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)

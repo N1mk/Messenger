@@ -37,6 +37,11 @@ func (c *HTTPController) Login(w http.ResponseWriter, r *http.Request) {
 
 	var input dto.LoginInput = dto.LoginInput{UserID: uint(userID), Password: req.Password}
 
+	if err := c.v.Struct(input); err != nil {
+		http.Error(w, fmt.Sprintf("validation error: %s", err.Error()), http.StatusBadRequest)
+		return
+	}
+
 	output, err := c.uc.Login(input)
 	if err != nil {
 		if errors.Is(err, domain.ErrIncorrectPassword) {

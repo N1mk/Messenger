@@ -6,6 +6,7 @@ import (
 	"net/http"
 
 	"github.com/go-chi/chi"
+	"github.com/go-playground/validator/v10"
 )
 
 // HTTPControllerInterfece defines all handler methods.
@@ -23,16 +24,13 @@ type HTTPControllerInterface interface {
 // HTTPController is a default implementation of HTTPControllerInterface.
 type HTTPController struct {
 	r  *chi.Mux
+	v  *validator.Validate
 	uc *usecase.Usecase
 }
 
 // NewHTTPController initializes HTTPController and returns pointer on it.
 func NewHTTPController(uc *usecase.Usecase) *HTTPController {
-	c := HTTPController{uc: uc}
-
-	c.r = chi.NewRouter()
-
-	return &c
+	return &HTTPController{r: chi.NewRouter(), v: validator.New(validator.WithRequiredStructEnabled()), uc: uc}
 }
 
 // DefineEndpoint is a method for definding all endpoints in chi router.
