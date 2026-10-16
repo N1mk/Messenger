@@ -18,6 +18,8 @@ type HTTPControllerInterface interface {
 	GetMessages(w http.ResponseWriter, r *http.Request)
 	CreateChat(w http.ResponseWriter, r *http.Request)
 	SendMessage(w http.ResponseWriter, r *http.Request)
+	UpdateChat(w http.ResponseWriter, r *http.Request)
+	UpdateAccount(w http.ResponseWriter, r *http.Request)
 	DeleteChat(w http.ResponseWriter, r *http.Request)
 	DeleteAccount(w http.ResponseWriter, r *http.Request)
 }
@@ -43,6 +45,8 @@ func (c *HTTPController) DefindEndpoints() {
 	c.r.Post("/users", c.Signup)
 	c.r.Post("/chats", c.CreateChat)
 	c.r.Post("/chats/{id}/messages", c.SendMessage)
+	c.r.Put("/chats", c.UpdateChat)
+	c.r.Put("/users", c.UpdateAccount)
 	c.r.Delete("/users/{id}", c.DeleteAccount)
 	c.r.Delete("/chats/{id}", c.DeleteChat)
 }

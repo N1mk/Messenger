@@ -73,6 +73,27 @@
     "outputFields": []
   },
   {
+    "name": "update chat",
+    "inputFields": [
+      "UserID uint `json:\"User_id\" validate:\"required\"`",
+      "ChatID uint `json:\"chat_id\" validate:\"required\"`",
+      "CreatorID uint `json:\"user_id\" validate:\"required\"`",
+      "Usernames []string `json:\"usernames\" validate:\"required\"`",
+      "Name string `json:\"name\" validate:\"required,max=20\"`"
+    ],
+    "outputFields": []
+  },
+  {
+    "name": "update account",
+    "inputFields": [
+      "UserID uint `json:\"user_id\" validate:\"required\"`",
+      "Username string `json:\"username\" validate:\"required,max=20\"`",
+      "Email string `json:\"email\" validate:\"required,email\"`",
+      "Password string `json:\"password\" validate:\"required,min=6,max=20\"`"
+    ],
+    "outputFields": []
+  },
+  {
     "name": "delete chat",
     "inputFields": [
       "UserID uint `json:\"user_id\" validate:\"required\"`",
