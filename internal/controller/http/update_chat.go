@@ -12,7 +12,7 @@ import (
 // updateAccountRequest defines account update request structure
 type updateChatRequest struct {
 	ChatID    uint     `json:"chat_id" validate:"required"`
-	CreatorID uint     `json:"user_id" validate:"required"`
+	OwnerID   uint     `json:"owner_id" validate:"required"`
 	Usernames []string `json:"usernames" validate:"required"`
 	Name      string   `json:"name" validate:"required,max=20"`
 }
@@ -37,7 +37,7 @@ func (c *HTTPController) UpdateChat(w http.ResponseWriter, r *http.Request) {
 
 	userID := r.Context().Value("user_id").(uint)
 
-	var input dto.UpdateChatInput = dto.UpdateChatInput{UserID: userID, ChatID: req.ChatID, CreatorID: req.CreatorID, Usernames: req.Usernames, Name: req.Name}
+	var input dto.UpdateChatInput = dto.UpdateChatInput{UserID: userID, ChatID: req.ChatID, OwnerID: req.OwnerID, Usernames: req.Usernames, Name: req.Name}
 
 	if err := c.v.Struct(input); err != nil {
 		http.Error(w, fmt.Sprintf("validation error: %s", err.Error()), http.StatusBadRequest)

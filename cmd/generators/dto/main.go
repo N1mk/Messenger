@@ -7,6 +7,7 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
+	stringoperations "messenger/pkg/string_operations"
 	"os"
 	"path/filepath"
 	"strings"
@@ -44,7 +45,7 @@ func main() {
 	}
 
 	configPath := args[1]
-	pakagePath := args[2]
+	packagePath := args[2]
 
 	configData, err := os.ReadFile(configPath)
 	if err != nil {
@@ -62,25 +63,12 @@ func main() {
 	for _, endpoint := range endpoints {
 		// Parsing endpoint name
 
-		var fileName string
-		var structName string
-
-		splittedName := strings.Fields(endpoint.Name)
-
-		for i, s := range splittedName {
-			fileName += strings.ToLower(s)
-			if i != len(splittedName)-1 {
-				fileName += "_"
-			}
-
-			structName += strings.ToUpper(string(s[0])) + strings.ToLower(s[1:])
-		}
-
-		fileName += ".go"
+		fileName := stringoperations.SpaceSplittedToUnderscoreSplitted(endpoint.Name) + ".go"
+		structName := stringoperations.SpaceSplittedToUpperCamelCase(endpoint.Name)
 
 		// Generating file
 
-		filePath := filepath.Join(pakagePath, fileName)
+		filePath := filepath.Join(packagePath, fileName)
 
 		var buf bytes.Buffer
 		err := t.Execute(&buf, map[string]interface{}{
@@ -106,98 +94,3 @@ func main() {
 		}
 	}
 }
-
-/*
-func main() {
-	args := os.Args
-	if len(args) != 3 {
-		panic(fmt.Errorf("unexpected arguments count (%d)", len(args)))
-	}
-
-	configPath := args[1]
-	pakagePath := args[2]
-
-	configFile, err := os.Open(configPath)
-	if err != nil {
-		panic(fmt.Errorf("cannot open config file: %w", err))
-	}
-	defer configFile.Close()
-
-	t := template.Must(template.New("gen").Parse(fileTemplate))
-
-	scanner := bufio.NewScanner(configFile)
-	for scanner.Scan() {
-		line := strings.Split(scanner.Text(), "|")
-		if len(line) != 3 {
-			fmt.Fprintf(os.Stderr, "invalid config file: unexpected arguments count in the line\n")
-			continue
-		}
-
-		// Parsing endpoint name
-
-		var fileName string
-		var structName string
-
-		splittedName := strings.Fields(line[0])
-
-		for i, s := range splittedName {
-			fileName += strings.ToLower(s)
-			if i != len(splittedName)-1 {
-				fileName += "_"
-			}
-
-			structName += strings.ToUpper(string(s[0])) + strings.ToLower(s[1:])
-		}
-
-		fileName += ".go"
-
-		// Parsing input arguments
-
-		var inputArguments string
-
-		splittedArguments := strings.Split(line[1], "/")
-
-		for _, s := range splittedArguments {
-			inputArguments += fmt.Sprintf("%s\n", s)
-		}
-
-		// Parsing output arguments
-
-		var outputArguments string
-
-		splittedArguments = strings.Split(line[2], "/")
-
-		for _, s := range splittedArguments {
-			outputArguments += fmt.Sprintf("%s\n", s)
-		}
-
-		// Generating file
-
-		filePath := filepath.Join(pakagePath, fileName)
-
-		var buf bytes.Buffer
-		err := t.Execute(&buf, map[string]interface{}{
-			"StructName":      structName,
-			"InputArguments":  inputArguments,
-			"OutputArguments": outputArguments,
-		})
-		if err != nil {
-			fmt.Fprintf(os.Stderr, "template executing error: %s", err.Error())
-			continue
-		}
-
-		formatted, err := imports.Process(fileName, buf.Bytes(), nil)
-		if err != nil {
-			fmt.Fprintf(os.Stderr, "formatting error: %s", err.Error())
-			continue
-		}
-
-		err = os.WriteFile(filePath, formatted, 0644)
-		if err != nil {
-			fmt.Fprintf(os.Stderr, "file writing error: %s", err.Error())
-			continue
-		}
-	}
-}
-
-*/

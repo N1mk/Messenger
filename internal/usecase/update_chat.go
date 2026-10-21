@@ -10,11 +10,21 @@ import (
 // The method receives dto.UpdateChatInput and returns dto.UpdateChatOutput and error.
 // It updates chat with same id as in input.
 func (u *Usecase) UpdateChat(input dto.UpdateChatInput) (dto.UpdateChatOutput, error) {
-	if ok, _ := u.isUserInChat(input.UserID, input.ChatID); !ok {
+	chat, err := u.postgres.GetChatByID(input.ChatID)
+	if err != nil {
+		return dto.UpdateChatOutput{}, fmt.Errorf("chat getting error: %w", err)
+	}
+
+	if chat.Owner.ID != input.UserID {
 		return dto.UpdateChatOutput{}, domain.ErrUnauthorized
 	}
 
-	if err := u.postgres.UpdateChat(&domain.Chat{ID: input.UserID, Name: input.Name}); err != nil {
+	owner, err := u.postgres.GetUserByID(input.OwnerID)
+	if err != nil {
+		return dto.UpdateChatOutput{}, fmt.Errorf("new chat owner getting error: %w", err)
+	}
+
+	if err := u.postgres.UpdateChat(&domain.Chat{ID: input.UserID, Owner: *owner, Name: input.Name}); err != nil {
 		return dto.UpdateChatOutput{}, fmt.Errorf("chat updating error: %w", err)
 	}
 
