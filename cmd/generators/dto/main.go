@@ -77,19 +77,19 @@ func main() {
 			"OutputFields": strings.Join(endpoint.OutputFields, "\n"),
 		})
 		if err != nil {
-			fmt.Fprintf(os.Stderr, "template executing error: %s", err.Error())
+			fmt.Fprintf(os.Stderr, "template executing error: %s\n", err.Error())
 			continue
 		}
 
 		formatted, err := imports.Process(fileName, buf.Bytes(), nil)
 		if err != nil {
-			fmt.Fprintf(os.Stderr, "formatting error: %s", err.Error())
+			fmt.Fprintf(os.Stderr, "formatting error: %s\n", err.Error())
 			continue
 		}
 
 		err = os.WriteFile(filePath, formatted, 0644)
 		if err != nil {
-			fmt.Fprintf(os.Stderr, "file writing error: %s", err.Error())
+			fmt.Fprintf(os.Stderr, "file writing error: %s\n", err.Error())
 			continue
 		}
 	}

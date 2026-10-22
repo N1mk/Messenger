@@ -1,0 +1,80 @@
+{
+    "httpStruct": {
+        "endpoints": [
+            {
+                "name": "login",
+                "httpMethod": "get",
+                "endpoint": "/users/{id}/login"
+            },
+            {
+                "name": "login by refresh token",
+                "httpMethod": "get",
+                "endpoint": "/users/{id}/refresh"
+            },
+            {
+                "name": "get chats",
+                "httpMethod": "get",
+                "endpoint": "/chats"
+            },
+            {
+                "name": "get messages",
+                "httpMethod": "get",
+                "endpoint": "/chats/{id}/messages"
+            },
+            {
+                "name": "signup",
+                "httpMethod": "post",
+                "endpoint": "/users"
+            },
+            {
+                "name": "create chat",
+                "httpMethod": "post",
+                "endpoint": "/chats"
+            },
+            {
+                "name": "send message",
+                "httpMethod": "post",
+                "endpoint": "/chats/{id}/messages"
+            },
+            {
+                "name": "update chat",
+                "httpMethod": "put",
+                "endpoint": "/chats/{id}"
+            },
+            {
+                "name": "update account",
+                "httpMethod": "put",
+                "endpoint": "/users"
+            },
+            {
+                "name": "delete chat",
+                "httpMethod": "delete",
+                "endpoint": "/chats/{id}"
+            },
+            {
+                "name": "delete account",
+                "httpMethod": "delete",
+                "endpoint": "/users/{id}"
+            }
+        ]
+    },
+    "endpointStructs": [
+        {
+            "name": "login",
+            "requestFields": [
+                "Password string `json:\"password\" validate:\"required,min=6,max=20\"`"
+            ],
+            "identCheck": false,
+            "contextValues": [],
+            "urlParams": [
+                "user id"
+            ],
+            "errorsToCheck": [
+                {
+                    "name": "err unauthorized",
+                    "httpDescription": "incorrect password"
+                }
+            ]
+        }
+    ]
+}

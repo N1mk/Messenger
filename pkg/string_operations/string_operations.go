@@ -14,13 +14,13 @@ func SpaceSplittedToUnderscoreSplitted(str string) string {
 		}
 	}
 
-	str += ".go"
-
 	return str
 }
 
 func SpaceSplittedToUpperCamelCase(str string) string {
 	splittedStr := strings.Fields(str)
+
+	str = ""
 
 	for _, s := range splittedStr {
 		str += strings.ToUpper(string(s[0])) + strings.ToLower(s[1:])
