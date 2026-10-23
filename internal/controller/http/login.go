@@ -33,7 +33,7 @@ func (c *HTTPController) Login(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	userID, err := strconv.Atoi(chi.URLParam(r, "userId"))
+	userID, err := strconv.Atoi(chi.URLParam(r, "userID"))
 	if err != nil {
 		http.Error(w, fmt.Sprintf("invalid id: %s", err.Error()), http.StatusBadRequest)
 		return
