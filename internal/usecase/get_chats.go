@@ -8,7 +8,7 @@ import (
 
 // GetChats implements the get_chats endpoint on the business layer.
 // The method receives dto.GetChatsInput and returns dto.GetChatsOutput and error.
-// It returns all chats, in which the user is a member.
+// It returns all chats, in which the user is membered.
 func (u *Usecase) GetChats(input dto.GetChatsInput) (dto.GetChatsOutput, error) {
 	user, err := u.postgres.GetUserByID(input.UserID)
 	if err != nil {

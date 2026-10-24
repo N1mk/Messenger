@@ -13,22 +13,46 @@ import (
 
 // PostgresInterface defines all methods for work with postgres databases.
 type PostgresInterface interface {
+	// GetUserByID selects user from the users table by id.
 	GetUserByID(id uint) (*domain.User, error)
+
+	// GetUserByName selects user from the users table by name.
 	GetUserByName(username string) (*domain.User, error)
+
+	// СreateUser creates new element in the users table.
 	CreateUser(user domain.User) (*domain.User, error)
+
+	// RemoveUser removes user from the users table by id.
 	RemoveUser(id uint) error
+
+	// UpdateUser updates user with correct id.
 	UpdateUser(user *domain.User) error
 
+	// GetChatByID selects chat from the chats table by id.
 	GetChatByID(id uint) (*domain.Chat, error)
+
+	// GetChatsCount returns count of the chats table elements.
 	GetChatsCount() int
+
+	// СreateChat creates new element in the chats table.
 	CreateChat(chat domain.Chat) (*domain.Chat, error)
+
+	// RemoveChat removes chat from the chats table by id.
 	RemoveChat(id uint) error
+
+	// UpdateChat updates chat with correct id.
 	UpdateChat(chat *domain.Chat) error
 
+	// GetMessages selects all messages from the messages table with correct chat id.
 	GetMessages(chatID uint) ([]domain.Message, error)
 
+	// RefreshTokenExists checks if refresh token exists in the refresh_tokens table.
 	RefreshTokenExists(token jwt.RefreshToken) (ok bool, err error)
+
+	// СreateRefreshToken creates new element in the refresh_tokens table.
 	CreateRefreshToken(token jwt.RefreshToken) error
+
+	// RemoveRefreshToken removes refresh token from refresh_tokens table.
 	RemoveRefreshToken(token jwt.RefreshToken) error
 }
 
