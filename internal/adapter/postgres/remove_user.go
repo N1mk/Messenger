@@ -16,7 +16,7 @@ func (p *Postgres) RemoveUser(id uint) error {
 		return err
 	}
 
-	if err := p.db.Exec("DELETE FROM users WHERE id = ?", id).Error; err != nil {
+	if err := p.db.Delete(&domain.User{}, id).Error; err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			return domain.ErrNotFound
 		}

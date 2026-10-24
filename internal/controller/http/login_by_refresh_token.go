@@ -29,7 +29,7 @@ func (c *HTTPController) LoginByRefreshToken(w http.ResponseWriter, r *http.Requ
 	}
 	defer r.Body.Close()
 
-	userID, err := strconv.Atoi(chi.URLParam(r, "id"))
+	userID, err := strconv.Atoi(chi.URLParam(r, "userID"))
 	if err != nil {
 		http.Error(w, fmt.Sprintf("invalid id: %s", err.Error()), http.StatusBadRequest)
 		return

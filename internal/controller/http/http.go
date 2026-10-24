@@ -41,16 +41,16 @@ func NewHTTPController(uc *usecase.Usecase) *HTTPController {
 // DefineEndpoint is a method for definding all endpoints in chi router.
 func (c *HTTPController) DefindEndpoints() {
 	c.r.Get("/users/{userID}/login", c.Login)
-	c.r.Get("/users/{id}/refresh", c.LoginByRefreshToken)
+	c.r.Get("/users/{userID}/refresh", c.LoginByRefreshToken)
 	c.r.Get("/chats", c.GetChats)
-	c.r.Get("/chats/{id}/messages", c.GetMessages)
+	c.r.Get("/chats/{chatID}/messages", c.GetMessages)
 	c.r.Post("/users", c.Signup)
 	c.r.Post("/chats", c.CreateChat)
-	c.r.Post("/chats/{id}/messages", c.SendMessage)
-	c.r.Put("/chats/{id}", c.UpdateChat)
+	c.r.Post("/chats/{chatID}/messages", c.SendMessage)
+	c.r.Put("/chats/{chatID}", c.UpdateChat)
 	c.r.Put("/users", c.UpdateAccount)
-	c.r.Delete("/chats/{id}", c.DeleteChat)
-	c.r.Delete("/users/{id}", c.DeleteAccount)
+	c.r.Delete("/chats/{chatID}", c.DeleteChat)
+	c.r.Delete("/users/{userID}", c.DeleteAccount)
 
 }
 

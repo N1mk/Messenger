@@ -23,6 +23,11 @@ func SpaceSplittedToUpperCamelCase(str string) string {
 	str = ""
 
 	for _, s := range splittedStr {
+		if len(s) > 1 && s[1] > 'A' && s[1] < 'Z' {
+			str += strings.ToUpper(s)
+			continue
+		}
+
 		str += strings.ToUpper(string(s[0])) + strings.ToLower(s[1:])
 	}
 
@@ -30,7 +35,9 @@ func SpaceSplittedToUpperCamelCase(str string) string {
 }
 
 func SpaceSplittedToLowerCamelCase(str string) string {
+	firstWord := strings.Fields(str)[0]
+
 	str = SpaceSplittedToUpperCamelCase(str)
 
-	return strings.ToLower(string(str[0])) + str[1:]
+	return strings.ToLower(firstWord) + str[len(firstWord):]
 }

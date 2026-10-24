@@ -4,12 +4,12 @@
             {
                 "name": "login",
                 "httpMethod": "get",
-                "endpoint": "/users/{id}/login"
+                "endpoint": "/users/{userID}/login"
             },
             {
                 "name": "login by refresh token",
                 "httpMethod": "get",
-                "endpoint": "/users/{id}/refresh"
+                "endpoint": "/users/{userID}/refresh"
             },
             {
                 "name": "get chats",
@@ -19,7 +19,7 @@
             {
                 "name": "get messages",
                 "httpMethod": "get",
-                "endpoint": "/chats/{id}/messages"
+                "endpoint": "/chats/{chatID}/messages"
             },
             {
                 "name": "signup",
@@ -34,12 +34,12 @@
             {
                 "name": "send message",
                 "httpMethod": "post",
-                "endpoint": "/chats/{id}/messages"
+                "endpoint": "/chats/{chatID}/messages"
             },
             {
                 "name": "update chat",
                 "httpMethod": "put",
-                "endpoint": "/chats/{id}"
+                "endpoint": "/chats/{chatID}"
             },
             {
                 "name": "update account",
@@ -49,12 +49,12 @@
             {
                 "name": "delete chat",
                 "httpMethod": "delete",
-                "endpoint": "/chats/{id}"
+                "endpoint": "/chats/{chatID}"
             },
             {
                 "name": "delete account",
                 "httpMethod": "delete",
-                "endpoint": "/users/{id}"
+                "endpoint": "/users/{userID}"
             }
         ]
     },
@@ -67,7 +67,7 @@
             "identCheck": false,
             "contextValues": [],
             "urlParams": [
-                "user id"
+                "user ID"
             ],
             "errorsToCheck": [
                 {
