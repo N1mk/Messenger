@@ -128,7 +128,10 @@ func generateHTTPFile(http httpStruct, t *template.Template, packagePath string)
 	var endpointDifinitionsStr string
 
 	for _, endpoint := range http.Endpoints {
-		httpControllerMethodsStr += fmt.Sprintf("%s(w http.ResponseWriter, r *http.Request)\n", stringoperations.SpaceSplittedToUpperCamelCase(endpoint.Name))
+		httpControllerMethodsStr += fmt.Sprintf(`// %s implements the %s endpoint on the controller layer.
+			// The method parses request structure and calls usecase.Usecase.%s().
+			%s(w http.ResponseWriter, r *http.Request)
+			`, stringoperations.SpaceSplittedToUpperCamelCase(endpoint.Name), stringoperations.SpaceSplittedToUnderscoreSplitted(endpoint.Name), stringoperations.SpaceSplittedToUpperCamelCase(endpoint.Name), stringoperations.SpaceSplittedToUpperCamelCase(endpoint.Name))
 		endpointDifinitionsStr += fmt.Sprintf("c.r.%s(\"%s\", c.%s)\n", stringoperations.SpaceSplittedToUpperCamelCase(endpoint.HTTPMethod), endpoint.Endpoint, stringoperations.SpaceSplittedToUpperCamelCase(endpoint.Name))
 	}
 
