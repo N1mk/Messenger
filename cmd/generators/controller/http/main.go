@@ -127,11 +127,15 @@ func generateHTTPFile(http httpStruct, t *template.Template, packagePath string)
 	var httpControllerMethodsStr string
 	var endpointDifinitionsStr string
 
-	for _, endpoint := range http.Endpoints {
+	for i, endpoint := range http.Endpoints {
 		httpControllerMethodsStr += fmt.Sprintf(`// %s implements the %s endpoint on the controller layer.
 			// The method parses request structure and calls usecase.Usecase.%s().
 			%s(w http.ResponseWriter, r *http.Request)
 			`, stringoperations.SpaceSplittedToUpperCamelCase(endpoint.Name), stringoperations.SpaceSplittedToUnderscoreSplitted(endpoint.Name), stringoperations.SpaceSplittedToUpperCamelCase(endpoint.Name), stringoperations.SpaceSplittedToUpperCamelCase(endpoint.Name))
+		if i != len(http.Endpoints)-1 {
+			httpControllerMethodsStr += "\n"
+		}
+
 		endpointDifinitionsStr += fmt.Sprintf("c.r.%s(\"%s\", c.%s)\n", stringoperations.SpaceSplittedToUpperCamelCase(endpoint.HTTPMethod), endpoint.Endpoint, stringoperations.SpaceSplittedToUpperCamelCase(endpoint.Name))
 	}
 
@@ -195,7 +199,7 @@ func generateEndpointFiles(endpoints []endpointStruct, t *template.Template, pac
 					continue
 				}
 
-				inputFieldPairs += fmt.Sprintf("%s: req.%s, ", stringoperations.SpaceSplittedToUpperCamelCase(parts[0]), stringoperations.SpaceSplittedToUpperCamelCase(parts[0]))
+				inputFieldPairs += fmt.Sprintf("%s: req.%s, ", parts[0], parts[0])
 			}
 
 			requestStruct += "}"

@@ -16,33 +16,43 @@ type HTTPControllerInterface interface {
 	// Login implements the login endpoint on the controller layer.
 	// The method parses request structure and calls usecase.Usecase.Login().
 	Login(w http.ResponseWriter, r *http.Request)
+
 	// LoginByRefreshToken implements the login_by_refresh_token endpoint on the controller layer.
 	// The method parses request structure and calls usecase.Usecase.LoginByRefreshToken().
 	LoginByRefreshToken(w http.ResponseWriter, r *http.Request)
+
 	// GetChats implements the get_chats endpoint on the controller layer.
 	// The method parses request structure and calls usecase.Usecase.GetChats().
 	GetChats(w http.ResponseWriter, r *http.Request)
+
 	// GetMessages implements the get_messages endpoint on the controller layer.
 	// The method parses request structure and calls usecase.Usecase.GetMessages().
 	GetMessages(w http.ResponseWriter, r *http.Request)
+
 	// Signup implements the signup endpoint on the controller layer.
 	// The method parses request structure and calls usecase.Usecase.Signup().
 	Signup(w http.ResponseWriter, r *http.Request)
+
 	// CreateChat implements the create_chat endpoint on the controller layer.
 	// The method parses request structure and calls usecase.Usecase.CreateChat().
 	CreateChat(w http.ResponseWriter, r *http.Request)
+
 	// SendMessage implements the send_message endpoint on the controller layer.
 	// The method parses request structure and calls usecase.Usecase.SendMessage().
 	SendMessage(w http.ResponseWriter, r *http.Request)
+
 	// UpdateChat implements the update_chat endpoint on the controller layer.
 	// The method parses request structure and calls usecase.Usecase.UpdateChat().
 	UpdateChat(w http.ResponseWriter, r *http.Request)
+
 	// UpdateAccount implements the update_account endpoint on the controller layer.
 	// The method parses request structure and calls usecase.Usecase.UpdateAccount().
 	UpdateAccount(w http.ResponseWriter, r *http.Request)
+
 	// DeleteChat implements the delete_chat endpoint on the controller layer.
 	// The method parses request structure and calls usecase.Usecase.DeleteChat().
 	DeleteChat(w http.ResponseWriter, r *http.Request)
+
 	// DeleteAccount implements the delete_account endpoint on the controller layer.
 	// The method parses request structure and calls usecase.Usecase.DeleteAccount().
 	DeleteAccount(w http.ResponseWriter, r *http.Request)
