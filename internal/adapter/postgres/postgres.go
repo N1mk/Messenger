@@ -4,7 +4,6 @@ package postgres
 import (
 	"fmt"
 	"messenger/internal/domain"
-	"messenger/pkg/jwt"
 	"os"
 
 	"gorm.io/driver/postgres"
@@ -47,13 +46,13 @@ type PostgresInterface interface {
 	GetMessages(chatID uint) ([]domain.Message, error)
 
 	// RefreshTokenExists checks if refresh token exists in the refresh_tokens table.
-	RefreshTokenExists(token jwt.RefreshToken) (ok bool, err error)
+	RefreshTokenExists(token string) (ok bool, err error)
 
 	// СreateRefreshToken creates new element in the refresh_tokens table.
-	CreateRefreshToken(token jwt.RefreshToken) error
+	CreateRefreshToken(token string, userID uint) error
 
 	// RemoveRefreshToken removes refresh token from refresh_tokens table.
-	RemoveRefreshToken(token jwt.RefreshToken) error
+	RemoveRefreshToken(userID uint) error
 }
 
 // Postgres implements PostgresInterface and containts *gorm.DB for work with postgres databases.
@@ -76,7 +75,7 @@ func NewPostgres(dsn string) (*Postgres, error) {
 		return nil, err
 	}
 
-	db.AutoMigrate(&domain.User{}, &domain.Chat{}, &domain.Message{}, &jwt.RefreshToken{})
+	db.AutoMigrate(&domain.User{}, &domain.Chat{}, &domain.Message{}, &RefreshToken{})
 
 	return &Postgres{db: db}, nil
 }

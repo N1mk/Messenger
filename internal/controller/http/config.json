@@ -89,7 +89,7 @@
             "errorsToCheck": [
                 {
                     "name": "err unauthorized",
-                    "httpDescription": "incorrect password"
+                    "httpDescription": "incorrect refresh token"
                 }
             ]
         },

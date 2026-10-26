@@ -11,14 +11,15 @@ import (
 	"github.com/golang-jwt/jwt/v5"
 )
 
-type claims struct {
+type accesTokenClaims struct {
 	ID       uint
 	Username string
 	jwt.RegisteredClaims
 }
 
-type RefreshToken struct {
-	Token string
+type refreshTokenClaims struct {
+	ID uint
+	jwt.RegisteredClaims
 }
 
 type TokenPair struct {
@@ -26,13 +27,13 @@ type TokenPair struct {
 	RefreshToken string
 }
 
-func GenerateToken(id uint, username string) (TokenPair, error) {
+func GenerateTokenPair(id uint, username string) (TokenPair, error) {
 	signingKey := os.Getenv("JWT_SIG_KEY")
 	if signingKey == "" {
 		return TokenPair{}, fmt.Errorf("no jwt signing key in env variables")
 	}
 
-	accesToken := jwt.NewWithClaims(jwt.SigningMethodHS256, &claims{
+	accesToken := jwt.NewWithClaims(jwt.SigningMethodHS256, &accesTokenClaims{
 		ID:       id,
 		Username: username,
 		RegisteredClaims: jwt.RegisteredClaims{
@@ -47,10 +48,13 @@ func GenerateToken(id uint, username string) (TokenPair, error) {
 		return TokenPair{}, err
 	}
 
-	refreshToken := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.RegisteredClaims{
-		ExpiresAt: jwt.NewNumericDate(time.Now().Add(time.Hour * 24 * 30)),
-		IssuedAt:  jwt.NewNumericDate(time.Now()),
-		NotBefore: jwt.NewNumericDate(time.Now()),
+	refreshToken := jwt.NewWithClaims(jwt.SigningMethodHS256, &refreshTokenClaims{
+		ID: id,
+		RegisteredClaims: jwt.RegisteredClaims{
+			ExpiresAt: jwt.NewNumericDate(time.Now().Add(time.Minute * 15)),
+			IssuedAt:  jwt.NewNumericDate(time.Now()),
+			NotBefore: jwt.NewNumericDate(time.Now()),
+		},
 	},
 	)
 
@@ -62,13 +66,38 @@ func GenerateToken(id uint, username string) (TokenPair, error) {
 	return TokenPair{AccesToken: accesTokenStr, RefreshToken: refreshTokenStr}, nil
 }
 
-func ParseAccesToken(accesToken string) (id uint, err error) {
+func ParseAccesToken(accesToken string) (id uint, username string, err error) {
+	signingKey := os.Getenv("JWT_SIG_KEY")
+	if signingKey == "" {
+		return 0, "", fmt.Errorf("no jwt signing key in env variables")
+	}
+
+	token, err := jwt.ParseWithClaims(string(accesToken), &accesTokenClaims{}, func(t *jwt.Token) (any, error) {
+		if _, ok := t.Method.(*jwt.SigningMethodHMAC); !ok {
+			return nil, fmt.Errorf("invalid signing method")
+		}
+
+		return []byte(signingKey), nil
+	})
+	if err != nil {
+		return 0, "", err
+	}
+
+	tokenClaims, ok := token.Claims.(*accesTokenClaims)
+	if !ok {
+		return 0, "", fmt.Errorf("invalid token claims")
+	}
+
+	return tokenClaims.ID, tokenClaims.Username, nil
+}
+
+func ParseRefreshToken(refreshToken string) (id uint, err error) {
 	signingKey := os.Getenv("JWT_SIG_KEY")
 	if signingKey == "" {
 		return 0, fmt.Errorf("no jwt signing key in env variables")
 	}
 
-	token, err := jwt.ParseWithClaims(string(accesToken), &claims{}, func(t *jwt.Token) (any, error) {
+	token, err := jwt.ParseWithClaims(string(refreshToken), &refreshTokenClaims{}, func(t *jwt.Token) (any, error) {
 		if _, ok := t.Method.(*jwt.SigningMethodHMAC); !ok {
 			return nil, fmt.Errorf("invalid signing method")
 		}
@@ -79,29 +108,12 @@ func ParseAccesToken(accesToken string) (id uint, err error) {
 		return 0, err
 	}
 
-	user_claims, ok := token.Claims.(*claims)
+	tokenClaims, ok := token.Claims.(*refreshTokenClaims)
 	if !ok {
 		return 0, fmt.Errorf("invalid token claims")
 	}
 
-	return user_claims.ID, nil
-}
-
-func ParseRefreshToken(refreshToken string) error {
-	signingKey := os.Getenv("JWT_SIG_KEY")
-	if signingKey == "" {
-		return fmt.Errorf("no jwt signing key in env variables")
-	}
-
-	_, err := jwt.Parse(refreshToken, func(t *jwt.Token) (any, error) {
-		if _, ok := t.Method.(*jwt.SigningMethodHMAC); !ok {
-			return nil, fmt.Errorf("invalid signing method")
-		}
-
-		return []byte(signingKey), nil
-	})
-
-	return err
+	return tokenClaims.ID, err
 }
 
 func IdentifyMiddleware(next http.Handler) http.Handler {
@@ -119,14 +131,15 @@ func IdentifyMiddleware(next http.Handler) http.Handler {
 			return
 		}
 
-		userId, err := ParseAccesToken(headerParts[1])
+		userID, username, err := ParseAccesToken(headerParts[1])
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusUnauthorized)
 			return
 		}
 
 		r = r.WithContext(context.WithValue(r.Context(), "is_identified", true))
-		r = r.WithContext(context.WithValue(r.Context(), "user_id", userId))
+		r = r.WithContext(context.WithValue(r.Context(), "user_id", userID))
+		r = r.WithContext(context.WithValue(r.Context(), "username", username))
 
 		next.ServeHTTP(w, r)
 	})

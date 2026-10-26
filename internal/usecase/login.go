@@ -21,12 +21,16 @@ func (u *Usecase) Login(input dto.LoginInput) (dto.LoginOutput, error) {
 		return dto.LoginOutput{}, domain.ErrUnauthorized
 	}
 
-	tokenPair, err := jwt.GenerateToken(user.ID, user.Username)
+	tokenPair, err := jwt.GenerateTokenPair(user.ID, user.Username)
 	if err != nil {
 		return dto.LoginOutput{}, fmt.Errorf("jwt-token pair generation error: %w", err)
 	}
 
-	if err := u.postgres.CreateRefreshToken(jwt.RefreshToken{Token: tokenPair.RefreshToken}); err != nil {
+	if err := u.postgres.RemoveRefreshToken(input.UserID); err != nil {
+		return dto.LoginOutput{}, fmt.Errorf("old refresh token removing error: %w", err)
+	}
+
+	if err := u.postgres.CreateRefreshToken(tokenPair.RefreshToken, input.UserID); err != nil {
 		return dto.LoginOutput{}, fmt.Errorf("refresh token adding to database error: %w", err)
 	}
 

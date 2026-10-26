@@ -28,7 +28,7 @@ func (p *Postgres) UpdateUser(user *domain.User) error {
 		}
 	}
 
-	if err := p.db.Session(&gorm.Session{FullSaveAssociations: true}).Save(&user).Error; err != nil {
+	if err := p.db.Session(&gorm.Session{FullSaveAssociations: true}).Updates(&user).Error; err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			return fmt.Errorf("user updating error: %w", domain.ErrNotFound)
 		}

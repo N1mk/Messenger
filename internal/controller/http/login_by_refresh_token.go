@@ -49,7 +49,7 @@ func (c *HTTPController) LoginByRefreshToken(w http.ResponseWriter, r *http.Requ
 	output, err := c.uc.LoginByRefreshToken(input)
 	if err != nil {
 		if errors.Is(err, domain.ErrUnauthorized) {
-			http.Error(w, "incorrect password", http.StatusForbidden)
+			http.Error(w, "incorrect refresh token", http.StatusForbidden)
 			return
 		}
 

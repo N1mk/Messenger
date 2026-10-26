@@ -15,16 +15,21 @@ func (u *Usecase) UpdateChat(input dto.UpdateChatInput) (dto.UpdateChatOutput, e
 		return dto.UpdateChatOutput{}, fmt.Errorf("chat getting error: %w", err)
 	}
 
-	if chat.Owner.ID != input.UserID {
+	if input.UserID != chat.OwnerID {
 		return dto.UpdateChatOutput{}, domain.ErrUnauthorized
 	}
 
-	owner, err := u.postgres.GetUserByID(input.OwnerID)
-	if err != nil {
-		return dto.UpdateChatOutput{}, fmt.Errorf("new chat owner getting error: %w", err)
+	users := make([]domain.User, len(input.Usernames))
+	for i, username := range input.Usernames {
+		user, err := u.postgres.GetUserByName(username)
+		if err != nil {
+			return dto.UpdateChatOutput{}, fmt.Errorf("user getting error: %w", err)
+		}
+
+		users[i] = *user
 	}
 
-	if err := u.postgres.UpdateChat(&domain.Chat{ID: input.UserID, Owner: *owner, Name: input.Name}); err != nil {
+	if err := u.postgres.UpdateChat(&domain.Chat{ID: input.UserID, OwnerID: input.OwnerID, Name: input.Name, Users: users}); err != nil {
 		return dto.UpdateChatOutput{}, fmt.Errorf("chat updating error: %w", err)
 	}
 

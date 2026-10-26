@@ -17,24 +17,33 @@ func (u *Usecase) LoginByRefreshToken(input dto.LoginByRefreshTokenInput) (dto.L
 		return dto.LoginByRefreshTokenOutput{}, fmt.Errorf("user get error: %w", err)
 	}
 
-	if ok, err := u.postgres.RefreshTokenExists(jwt.RefreshToken{Token: input.RefreshToken}); !ok {
+	if ok, err := u.postgres.RefreshTokenExists(input.RefreshToken); !ok {
 		if err != nil {
 			return dto.LoginByRefreshTokenOutput{}, fmt.Errorf("refresh token exist check error: %w", err)
 		}
-		return dto.LoginByRefreshTokenOutput{}, domain.ErrUnauthorized
+		return dto.LoginByRefreshTokenOutput{}, fmt.Errorf("refresh token doesn't exist: %w", domain.ErrUnauthorized)
 	}
 
-	if err := jwt.ParseRefreshToken(input.RefreshToken); err != nil {
+	userID, err := jwt.ParseRefreshToken(input.RefreshToken)
+	if err != nil {
 		return dto.LoginByRefreshTokenOutput{}, fmt.Errorf("refresh token parsing error: %w", err)
 	}
 
-	tokenPair, err := jwt.GenerateToken(user.ID, user.Username)
+	if input.UserID != userID {
+		return dto.LoginByRefreshTokenOutput{}, fmt.Errorf("refresh token user id and request user id don't match: %s", domain.ErrUnauthorized)
+	}
+
+	tokenPair, err := jwt.GenerateTokenPair(user.ID, user.Username)
 	if err != nil {
 		return dto.LoginByRefreshTokenOutput{}, fmt.Errorf("jwt-token pair generation error: %w", err)
 	}
 
-	if err := u.postgres.CreateRefreshToken(jwt.RefreshToken{Token: tokenPair.RefreshToken}); err != nil {
-		return dto.LoginByRefreshTokenOutput{}, fmt.Errorf("refresh token adding to database error: %w", err)
+	if err := u.postgres.RemoveRefreshToken(input.UserID); err != nil {
+		return dto.LoginByRefreshTokenOutput{}, fmt.Errorf("old refresh token removing error: %w", err)
+	}
+
+	if err := u.postgres.CreateRefreshToken(tokenPair.RefreshToken, input.UserID); err != nil {
+		return dto.LoginByRefreshTokenOutput{}, fmt.Errorf("refresh token adding: %w", err)
 	}
 
 	return dto.LoginByRefreshTokenOutput{ID: user.ID, TokenPair: tokenPair}, nil

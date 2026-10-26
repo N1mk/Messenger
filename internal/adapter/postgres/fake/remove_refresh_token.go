@@ -1,10 +1,6 @@
 package postgres
 
-import (
-	"messenger/pkg/jwt"
-)
-
 // Заглушка
-func (p *FakePostgres) RemoveRefreshToken(token jwt.RefreshToken) error {
+func (p *FakePostgres) RemoveRefreshToken(userID uint) error {
 	return nil
 }

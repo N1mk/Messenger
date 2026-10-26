@@ -18,12 +18,16 @@ func (u *Usecase) Signup(input dto.SignupInput) (dto.SignupOutput, error) {
 		return dto.SignupOutput{}, fmt.Errorf("user creation error: %w", err)
 	}
 
-	tokenPair, err := jwt.GenerateToken(newUser.ID, newUser.Username)
+	tokenPair, err := jwt.GenerateTokenPair(newUser.ID, newUser.Username)
 	if err != nil {
 		return dto.SignupOutput{}, fmt.Errorf("jswt-token generation error: %w", err)
 	}
 
-	if err := u.postgres.CreateRefreshToken(jwt.RefreshToken{Token: tokenPair.RefreshToken}); err != nil {
+	if err := u.postgres.RemoveRefreshToken(newUser.ID); err != nil {
+		return dto.SignupOutput{}, fmt.Errorf("old refresh token removing error: %w", err)
+	}
+
+	if err := u.postgres.CreateRefreshToken(tokenPair.RefreshToken, newUser.ID); err != nil {
 		return dto.SignupOutput{}, fmt.Errorf("refresh token adding to database error: %w", err)
 	}
 
