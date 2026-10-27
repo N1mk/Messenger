@@ -49,7 +49,7 @@
       "ChatID uint `json:\"chat_id\" validate:\"required\"`"
     ],
     "outputFields": [
-      "Messages []domain.Message `json:\"messages\" gorm:\"type:jsonb\"`"
+      "Messages []*domain.Message `json:\"messages\" gorm:\"type:jsonb\"`"
     ]
   },
   {

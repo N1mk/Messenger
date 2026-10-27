@@ -43,7 +43,7 @@ type PostgresInterface interface {
 	UpdateChat(chat *domain.Chat) error
 
 	// GetMessages selects all messages from the messages table with correct chat id.
-	GetMessages(chatID uint) ([]domain.Message, error)
+	GetMessages(chatID uint) ([]*domain.Message, error)
 
 	// RefreshTokenExists checks if refresh token exists in the refresh_tokens table.
 	RefreshTokenExists(token string) (ok bool, err error)

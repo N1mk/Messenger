@@ -8,7 +8,7 @@ import (
 )
 
 // GetMessages selects all messages from the messages table with correct chat id.
-func (p *Postgres) GetMessages(chatID uint) ([]domain.Message, error) {
+func (p *Postgres) GetMessages(chatID uint) ([]*domain.Message, error) {
 	var messages []domain.Message
 
 	err := p.db.Raw("SELECT * FROM messages WHERE chat_id = ?", int(chatID)).Scan(&messages).Error
@@ -19,5 +19,10 @@ func (p *Postgres) GetMessages(chatID uint) ([]domain.Message, error) {
 		return nil, err
 	}
 
-	return messages, nil
+	messagePointers := make([]*domain.Message, len(messages))
+	for i, message := range messages {
+		messagePointers[i] = &message
+	}
+
+	return messagePointers, nil
 }

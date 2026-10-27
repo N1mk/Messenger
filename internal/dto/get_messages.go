@@ -11,5 +11,5 @@ type GetMessagesInput struct {
 
 // GetMessagesOutput is a data transfer structure defining contract between controller and usecase
 type GetMessagesOutput struct {
-	Messages []domain.Message `json:"messages" gorm:"type:jsonb"`
+	Messages []*domain.Message `json:"messages" gorm:"type:jsonb"`
 }

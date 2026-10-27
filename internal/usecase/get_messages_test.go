@@ -50,7 +50,7 @@ func TestGetMessages(t *testing.T) {
 
 			messages := make([]domain.Message, 0)
 			for _, message := range output.Messages {
-				messages = append(messages, message)
+				messages = append(messages, *message)
 			}
 
 			if !sliceoperations.CompareSlices(messages, test.ExpectedMessagesInOutput) {
