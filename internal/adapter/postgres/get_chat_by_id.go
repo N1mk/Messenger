@@ -11,7 +11,7 @@ import (
 func (p *Postgres) GetChatByID(id int) (*domain.Chat, error) {
 	var chat domain.Chat
 
-	err := p.db.Preload("Users").First(&chat, int(id)).Error
+	err := p.db.Preload("Users").First(&chat, id).Error
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			return nil, domain.ErrNotFound

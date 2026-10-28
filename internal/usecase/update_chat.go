@@ -29,7 +29,7 @@ func (u *Usecase) UpdateChat(input dto.UpdateChatInput) (dto.UpdateChatOutput, e
 		users[i] = *user
 	}
 
-	if err := u.postgres.UpdateChat(&domain.Chat{ID: input.UserID, OwnerID: input.OwnerID, Name: input.Name, Users: users}); err != nil {
+	if err := u.postgres.UpdateChat(&domain.Chat{ID: input.ChatID, OwnerID: input.OwnerID, Name: input.Name, Users: users}); err != nil {
 		return dto.UpdateChatOutput{}, fmt.Errorf("chat updating error: %w", err)
 	}
 
