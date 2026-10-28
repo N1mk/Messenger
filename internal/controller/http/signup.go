@@ -42,11 +42,11 @@ func (c *HTTPController) Signup(w http.ResponseWriter, r *http.Request) {
 	output, err := c.uc.Signup(input)
 	if err != nil {
 		if errors.Is(err, domain.ErrDuplicated) {
-			http.Error(w, "duplicated", http.StatusForbidden)
+			http.Error(w, fmt.Sprintf("duplicated: %s", err.Error()), http.StatusBadRequest)
 			return
 		}
 		if errors.Is(err, domain.ErrNotFound) {
-			http.Error(w, "not found", http.StatusForbidden)
+			http.Error(w, fmt.Sprintf("not found: %s", err.Error()), http.StatusNotFound)
 			return
 		}
 

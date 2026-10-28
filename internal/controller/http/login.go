@@ -49,7 +49,7 @@ func (c *HTTPController) Login(w http.ResponseWriter, r *http.Request) {
 	output, err := c.uc.Login(input)
 	if err != nil {
 		if errors.Is(err, domain.ErrUnauthorized) {
-			http.Error(w, "incorrect password", http.StatusForbidden)
+			http.Error(w, fmt.Sprintf("incorrect password: %s", err.Error()), http.StatusUnauthorized)
 			return
 		}
 

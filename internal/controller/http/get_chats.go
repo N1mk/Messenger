@@ -32,7 +32,7 @@ func (c *HTTPController) GetChats(w http.ResponseWriter, r *http.Request) {
 	output, err := c.uc.GetChats(input)
 	if err != nil {
 		if errors.Is(err, domain.ErrNotFound) {
-			http.Error(w, "not found", http.StatusForbidden)
+			http.Error(w, fmt.Sprintf("not found: %s", err.Error()), http.StatusNotFound)
 			return
 		}
 

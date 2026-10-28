@@ -72,7 +72,8 @@
             "errorsToCheck": [
                 {
                     "name": "err unauthorized",
-                    "httpDescription": "incorrect password"
+                    "httpDescription": "incorrect password",
+                    "httpStatus": "status unauthorized"
                 }
             ]
         },
@@ -89,7 +90,8 @@
             "errorsToCheck": [
                 {
                     "name": "err unauthorized",
-                    "httpDescription": "incorrect refresh token"
+                    "httpDescription": "incorrect refresh token",
+                    "httpStatus": "status bad request"
                 }
             ]
         },
@@ -104,7 +106,8 @@
             "errorsToCheck": [
                 {
                     "name": "err not found",
-                    "httpDescription": "not found"
+                    "httpDescription": "not found",
+                    "httpStatus": "status not found"
                 }
             ]
         },
@@ -121,11 +124,13 @@
             "errorsToCheck": [
                 {
                     "name": "err user is not in chat",
-                    "httpDescription": "user is not in the chat"
+                    "httpDescription": "user is not in the chat",
+                    "httpStatus": "status unauthorized"
                 },
                 {
                     "name": "err not found",
-                    "httpDescription": "not found"
+                    "httpDescription": "not found",
+                    "httpStatus": "status not found"
                 }
             ]
         },
@@ -142,11 +147,13 @@
             "errorsToCheck": [
                 {
                     "name": "err duplicated",
-                    "httpDescription": "duplicated"
+                    "httpDescription": "duplicated",
+                    "httpStatus": "status bad request"
                 },
                 {
                     "name": "err not found",
-                    "httpDescription": "not found"
+                    "httpDescription": "not found",
+                    "httpStatus": "status not found"
                 }
             ]
         },
@@ -178,11 +185,13 @@
             "errorsToCheck": [
                 {
                     "name": "err user is not in chat",
-                    "httpDescription": "user is not in the chat"
+                    "httpDescription": "user is not in the chat",
+                    "httpStatus": "status unauthorized"
                 },
                 {
                     "name": "err not found",
-                    "httpDescription": "not found"
+                    "httpDescription": "not found",
+                    "httpStatus": "status not found"
                 }
             ]
         },
@@ -203,7 +212,8 @@
             "errorsToCheck": [
                 {
                     "name": "err not found",
-                    "httpDescription": "not found"
+                    "httpDescription": "not found",
+                    "httpStatus": "status not found"
                 }
             ]
         },
@@ -222,7 +232,8 @@
             "errorsToCheck": [
                 {
                     "name": "err not found",
-                    "httpDescription": "not found"
+                    "httpDescription": "not found",
+                    "httpStatus": "status not found"
                 }
             ]
         },
@@ -239,11 +250,13 @@
             "errorsToCheck": [
                 {
                     "name": "err user is not in chat",
-                    "httpDescription": "user is not in the chat"
+                    "httpDescription": "user is not in the chat",
+                    "httpStatus": "status unauthorized"
                 },
                 {
                     "name": "err not found",
-                    "httpDescription": "not found"
+                    "httpDescription": "not found",
+                    "httpStatus": "status not found"
                 }
             ]
         },
@@ -257,7 +270,8 @@
             "errorsToCheck": [
                 {
                     "name": "err not found",
-                    "httpDescription": "not found"
+                    "httpDescription": "not found",
+                    "httpStatus": "status not found"
                 }
             ]
         }

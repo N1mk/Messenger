@@ -119,6 +119,7 @@ type endpointStruct struct {
 type errToCheck struct {
 	Name            string `json:"name"`
 	HTTPDescription string `json:"httpDescription"`
+	HTTPStatus      string `json:"httpStatus"`
 }
 
 const httpFileName = "http.go"
@@ -240,10 +241,10 @@ func generateEndpointFiles(endpoints []endpointStruct, t *template.Template, pac
 
 		for _, err := range endpoint.ErrorsToCheck {
 			errorsParsingStr += fmt.Sprintf(`if errors.Is(err, domain.%s) {
-				http.Error(w, "%s", http.StatusForbidden)
+				http.Error(w, fmt.Sprintf("%s: %s", err.Error()), http.%s)
 				return
 				}
-				`, stringoperations.SpaceSplittedToUpperCamelCase(err.Name), err.HTTPDescription)
+				`, stringoperations.SpaceSplittedToUpperCamelCase(err.Name), err.HTTPDescription, "%"+"s", stringoperations.SpaceSplittedToUpperCamelCase(err.HTTPStatus))
 		}
 
 		inputFieldPairs += "}"
