@@ -34,9 +34,9 @@ func (c *HTTPController) CreateChat(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	userID := r.Context().Value("user_id").(uint)
+	userID := r.Context().Value("user_id").(int)
 
-	var input dto.CreateChatInput = dto.CreateChatInput{Usernames: req.Usernames, Name: req.Name, CreatorID: uint(userID)}
+	var input dto.CreateChatInput = dto.CreateChatInput{Usernames: req.Usernames, Name: req.Name, CreatorID: userID}
 
 	if err := c.v.Struct(input); err != nil {
 		http.Error(w, fmt.Sprintf("validation error: %s", err.Error()), http.StatusBadRequest)

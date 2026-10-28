@@ -3,8 +3,8 @@ package dto
 
 // SendMessageInput is a data transfer structure defining contract between controller and usecase
 type SendMessageInput struct {
-	UserID uint   `json:"user_id" validate:"required"`
-	ChatID uint   `json:"chat_id" validate:"required"`
+	UserID int    `json:"user_id" validate:"required"`
+	ChatID int    `json:"chat_id" validate:"required"`
 	Text   string `json:"text" validate:"required,max=800"`
 }
 

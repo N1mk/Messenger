@@ -8,7 +8,7 @@ import (
 )
 
 // GetMessages selects all messages from the messages table with correct chat id.
-func (p *Postgres) GetMessages(chatID uint) ([]*domain.Message, error) {
+func (p *Postgres) GetMessages(chatID int) ([]*domain.Message, error) {
 	var messages []domain.Message
 
 	err := p.db.Raw("SELECT * FROM messages WHERE chat_id = ?", int(chatID)).Scan(&messages).Error

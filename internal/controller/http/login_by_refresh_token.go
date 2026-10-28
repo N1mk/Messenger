@@ -39,7 +39,7 @@ func (c *HTTPController) LoginByRefreshToken(w http.ResponseWriter, r *http.Requ
 		return
 	}
 
-	var input dto.LoginByRefreshTokenInput = dto.LoginByRefreshTokenInput{RefreshToken: req.RefreshToken, UserID: uint(userID)}
+	var input dto.LoginByRefreshTokenInput = dto.LoginByRefreshTokenInput{RefreshToken: req.RefreshToken, UserID: userID}
 
 	if err := c.v.Struct(input); err != nil {
 		http.Error(w, fmt.Sprintf("validation error: %s", err.Error()), http.StatusBadRequest)

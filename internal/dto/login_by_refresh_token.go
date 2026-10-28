@@ -5,12 +5,12 @@ import "messenger/pkg/jwt"
 
 // LoginByRefreshTokenInput is a data transfer structure defining contract between controller and usecase
 type LoginByRefreshTokenInput struct {
-	UserID       uint   `json:"user_id" validate:"required"`
+	UserID       int    `json:"user_id" validate:"required"`
 	RefreshToken string `json:"refresh_token"`
 }
 
 // LoginByRefreshTokenOutput is a data transfer structure defining contract between controller and usecase
 type LoginByRefreshTokenOutput struct {
-	ID        uint          `json:"id"`
+	ID        int           `json:"id"`
 	TokenPair jwt.TokenPair `json:"token_pair"`
 }

@@ -5,7 +5,7 @@ import "messenger/internal/domain"
 
 // GetChatsInput is a data transfer structure defining contract between controller and usecase
 type GetChatsInput struct {
-	UserID uint `json:"user_id" validate:"required"`
+	UserID int `json:"user_id" validate:"required"`
 }
 
 // GetChatsOutput is a data transfer structure defining contract between controller and usecase

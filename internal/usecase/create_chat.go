@@ -10,7 +10,7 @@ import (
 // The method receives dto.CreateChatInput and returns dto.CreateChatOutput and error.
 // It creates new chat.
 func (u *Usecase) CreateChat(input dto.CreateChatInput) (dto.CreateChatOutput, error) {
-	added := make(map[uint]struct{})
+	added := make(map[int]struct{})
 
 	creator, err := u.postgres.GetUserByID(input.CreatorID)
 	if err != nil {

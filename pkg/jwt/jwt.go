@@ -12,13 +12,13 @@ import (
 )
 
 type accesTokenClaims struct {
-	ID       uint
+	ID       int
 	Username string
 	jwt.RegisteredClaims
 }
 
 type refreshTokenClaims struct {
-	ID uint
+	ID int
 	jwt.RegisteredClaims
 }
 
@@ -27,7 +27,7 @@ type TokenPair struct {
 	RefreshToken string
 }
 
-func GenerateTokenPair(id uint, username string) (TokenPair, error) {
+func GenerateTokenPair(id int, username string) (TokenPair, error) {
 	signingKey := os.Getenv("JWT_SIG_KEY")
 	if signingKey == "" {
 		return TokenPair{}, fmt.Errorf("no jwt signing key in env variables")
@@ -66,7 +66,7 @@ func GenerateTokenPair(id uint, username string) (TokenPair, error) {
 	return TokenPair{AccesToken: accesTokenStr, RefreshToken: refreshTokenStr}, nil
 }
 
-func ParseAccesToken(accesToken string) (id uint, username string, err error) {
+func ParseAccesToken(accesToken string) (id int, username string, err error) {
 	signingKey := os.Getenv("JWT_SIG_KEY")
 	if signingKey == "" {
 		return 0, "", fmt.Errorf("no jwt signing key in env variables")
@@ -91,7 +91,7 @@ func ParseAccesToken(accesToken string) (id uint, username string, err error) {
 	return tokenClaims.ID, tokenClaims.Username, nil
 }
 
-func ParseRefreshToken(refreshToken string) (id uint, err error) {
+func ParseRefreshToken(refreshToken string) (id int, err error) {
 	signingKey := os.Getenv("JWT_SIG_KEY")
 	if signingKey == "" {
 		return 0, fmt.Errorf("no jwt signing key in env variables")

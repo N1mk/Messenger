@@ -37,7 +37,7 @@ func (c *HTTPController) UpdateAccount(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	userID := r.Context().Value("user_id").(uint)
+	userID := r.Context().Value("user_id").(int)
 
 	var input dto.UpdateAccountInput = dto.UpdateAccountInput{Username: req.Username, Email: req.Email, Password: req.Password, UserID: userID}
 

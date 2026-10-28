@@ -39,7 +39,7 @@ func (c *HTTPController) Login(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	var input dto.LoginInput = dto.LoginInput{Password: req.Password, UserID: uint(userID)}
+	var input dto.LoginInput = dto.LoginInput{Password: req.Password, UserID: userID}
 
 	if err := c.v.Struct(input); err != nil {
 		http.Error(w, fmt.Sprintf("validation error: %s", err.Error()), http.StatusBadRequest)

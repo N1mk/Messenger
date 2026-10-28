@@ -7,36 +7,36 @@
       "Password string `json:\"password\" validate:\"required,min=6,max=20\"`"
     ],
     "outputFields": [
-      "ID uint `json:\"id\"`",
+      "ID int `json:\"id\"`",
       "TokenPair jwt.TokenPair `json:\"token_pair\"`"
     ]
   },
   {
     "name": "login",
     "inputFields": [
-      "UserID uint `json:\"user_id\" validate:\"required\"`",
+      "UserID int `json:\"user_id\" validate:\"required\"`",
       "Password string `json:\"password\" validate:\"required,min=6,max=20\"`"
     ],
     "outputFields": [
-      "ID uint `json:\"id\"`",
+      "ID int `json:\"id\"`",
       "TokenPair jwt.TokenPair `json:\"token_pair\"`"
     ]
   },
   {
     "name": "login by refresh token",
     "inputFields": [
-      "UserID uint `json:\"user_id\" validate:\"required\"`",
+      "UserID int `json:\"user_id\" validate:\"required\"`",
       "RefreshToken string `json:\"refresh_token\"`"
     ],
     "outputFields": [
-      "ID uint `json:\"id\"`",
+      "ID int `json:\"id\"`",
       "TokenPair jwt.TokenPair `json:\"token_pair\"`"
     ]
   },
   {
     "name": "get chats",
     "inputFields": [
-      "UserID uint `json:\"user_id\" validate:\"required\"`"
+      "UserID int `json:\"user_id\" validate:\"required\"`"
     ],
     "outputFields": [
       "Chats []*domain.Chat `json:\"chats\"`"
@@ -45,8 +45,8 @@
   {
     "name": "get messages",
     "inputFields": [
-      "UserID uint `json:\"user_id\" validate:\"required\"`",
-      "ChatID uint `json:\"chat_id\" validate:\"required\"`"
+      "UserID int `json:\"user_id\" validate:\"required\"`",
+      "ChatID int `json:\"chat_id\" validate:\"required\"`"
     ],
     "outputFields": [
       "Messages []*domain.Message `json:\"messages\" gorm:\"type:jsonb\"`"
@@ -55,19 +55,19 @@
   {
     "name": "create chat",
     "inputFields": [
-      "CreatorID uint `json:\"user_id\" validate:\"required\"`",
+      "CreatorID int `json:\"user_id\" validate:\"required\"`",
       "Usernames []string `json:\"usernames\" validate:\"required\"`",
       "Name string `json:\"name\" validate:\"required,max=20\"`"
     ],
     "outputFields": [
-      "ChatID uint `json:\"chat_id\"`"
+      "ChatID int `json:\"chat_id\"`"
     ]
   },
   {
     "name": "send message",
     "inputFields": [
-      "UserID uint `json:\"user_id\" validate:\"required\"`",
-      "ChatID uint `json:\"chat_id\" validate:\"required\"`",
+      "UserID int `json:\"user_id\" validate:\"required\"`",
+      "ChatID int `json:\"chat_id\" validate:\"required\"`",
       "Text string `json:\"text\" validate:\"required,max=800\"`"
     ],
     "outputFields": []
@@ -75,9 +75,9 @@
   {
     "name": "update chat",
     "inputFields": [
-      "UserID uint `json:\"user_id\" validate:\"required\"`",
-      "ChatID uint `json:\"chat_id\" validate:\"required\"`",
-      "OwnerID uint `json:\"owner_id\" validate:\"required\"`",
+      "UserID int `json:\"user_id\" validate:\"required\"`",
+      "ChatID int `json:\"chat_id\" validate:\"required\"`",
+      "OwnerID int `json:\"owner_id\" validate:\"required\"`",
       "Usernames []string `json:\"usernames\" validate:\"required\"`",
       "Name string `json:\"name\" validate:\"required,max=20\"`"
     ],
@@ -86,7 +86,7 @@
   {
     "name": "update account",
     "inputFields": [
-      "UserID uint `json:\"user_id\" validate:\"required\"`",
+      "UserID int `json:\"user_id\" validate:\"required\"`",
       "Username string `json:\"username\" validate:\"required,max=20\"`",
       "Email string `json:\"email\" validate:\"required,email\"`",
       "Password string `json:\"password\" validate:\"required,min=6,max=20\"`"
@@ -96,15 +96,15 @@
   {
     "name": "delete chat",
     "inputFields": [
-      "UserID uint `json:\"user_id\" validate:\"required\"`",
-      "ChatID uint `json:\"chat_id\" validate:\"required\"`"
+      "UserID int `json:\"user_id\" validate:\"required\"`",
+      "ChatID int `json:\"chat_id\" validate:\"required\"`"
     ],
     "outputFields": []
   },
   {
     "name": "delete account",
     "inputFields": [
-      "UserID uint `json:\"user_id\" validate:\"required\"`"
+      "UserID int `json:\"user_id\" validate:\"required\"`"
     ],
     "outputFields": []
   }

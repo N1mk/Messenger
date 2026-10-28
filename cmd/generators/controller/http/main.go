@@ -217,7 +217,7 @@ func generateEndpointFiles(endpoints []endpointStruct, t *template.Template, pac
 		}
 
 		for _, contextValue := range endpoint.ContextValues {
-			contextValuesGetting += fmt.Sprintf("%s := r.Context().Value(\"%s\").(uint)\n", stringoperations.SpaceSplittedToLowerCamelCase(contextValue), stringoperations.SpaceSplittedToUnderscoreSplitted(contextValue)) // Здесь не должно быть явного указания ".(uint)"
+			contextValuesGetting += fmt.Sprintf("%s := r.Context().Value(\"%s\").(int)\n", stringoperations.SpaceSplittedToLowerCamelCase(contextValue), stringoperations.SpaceSplittedToUnderscoreSplitted(contextValue)) // Здесь не должно быть явного указания ".(int)"
 
 			inputFieldPairs += fmt.Sprintf("%s: %s, ", stringoperations.SpaceSplittedToUpperCamelCase(contextValue), stringoperations.SpaceSplittedToLowerCamelCase(contextValue))
 		}

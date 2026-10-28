@@ -8,7 +8,7 @@ import (
 )
 
 // GetUserByID selects user from the users table by id.
-func (p *Postgres) GetUserByID(id uint) (*domain.User, error) {
+func (p *Postgres) GetUserByID(id int) (*domain.User, error) {
 	var user domain.User
 	err := p.db.Preload("Chats").First(&user, id).Error
 	if err != nil {

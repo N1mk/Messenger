@@ -20,7 +20,7 @@ func (c *HTTPController) GetChats(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	userID := r.Context().Value("user_id").(uint)
+	userID := r.Context().Value("user_id").(int)
 
 	var input dto.GetChatsInput = dto.GetChatsInput{UserID: userID}
 

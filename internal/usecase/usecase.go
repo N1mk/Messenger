@@ -82,7 +82,7 @@ func NewUsecase(postgres postgres.PostgresInterface) *Usecase {
 
 // isUserInChat is a privet Usecase method that checks if the user is in the chat.
 // It returns (true, nil) if the user is in the chat, (false, nil) if the user is not in the chat and (false, err) if an error appeared while execution.
-func (u *Usecase) isUserInChat(userID uint, chatID uint) (ok bool, err error) {
+func (u *Usecase) isUserInChat(userID int, chatID int) (ok bool, err error) {
 	chat, err := u.postgres.GetChatByID(chatID)
 	if err != nil {
 		return false, fmt.Errorf("chat getting error: %w", err)

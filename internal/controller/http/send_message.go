@@ -38,7 +38,7 @@ func (c *HTTPController) SendMessage(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	userID := r.Context().Value("user_id").(uint)
+	userID := r.Context().Value("user_id").(int)
 
 	chatID, err := strconv.Atoi(chi.URLParam(r, "chatID"))
 	if err != nil {
@@ -46,7 +46,7 @@ func (c *HTTPController) SendMessage(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	var input dto.SendMessageInput = dto.SendMessageInput{Text: req.Text, UserID: userID, ChatID: uint(chatID)}
+	var input dto.SendMessageInput = dto.SendMessageInput{Text: req.Text, UserID: userID, ChatID: chatID}
 
 	if err := c.v.Struct(input); err != nil {
 		http.Error(w, fmt.Sprintf("validation error: %s", err.Error()), http.StatusBadRequest)

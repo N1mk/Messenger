@@ -3,9 +3,9 @@ package dto
 
 // UpdateChatInput is a data transfer structure defining contract between controller and usecase
 type UpdateChatInput struct {
-	UserID    uint     `json:"user_id" validate:"required"`
-	ChatID    uint     `json:"chat_id" validate:"required"`
-	OwnerID   uint     `json:"owner_id" validate:"required"`
+	UserID    int      `json:"user_id" validate:"required"`
+	ChatID    int      `json:"chat_id" validate:"required"`
+	OwnerID   int      `json:"owner_id" validate:"required"`
 	Usernames []string `json:"usernames" validate:"required"`
 	Name      string   `json:"name" validate:"required,max=20"`
 }

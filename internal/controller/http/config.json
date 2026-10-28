@@ -189,7 +189,7 @@
         {
             "name": "update chat",
             "requestFields": [
-                "OwnerID uint `json:\"owner_id\" validate:\"required\"`",
+                "OwnerID int `json:\"owner_id\" validate:\"required\"`",
                 "Usernames []string `json:\"usernames\" validate:\"required\"`",
                 "Name string `json:\"name\" validate:\"required,max=20\"`"
             ],

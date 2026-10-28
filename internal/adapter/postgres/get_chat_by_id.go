@@ -8,7 +8,7 @@ import (
 )
 
 // GetChatByID selects chat from the chats table by id.
-func (p *Postgres) GetChatByID(id uint) (*domain.Chat, error) {
+func (p *Postgres) GetChatByID(id int) (*domain.Chat, error) {
 	var chat domain.Chat
 
 	err := p.db.Preload("Users").First(&chat, int(id)).Error

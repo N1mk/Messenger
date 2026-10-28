@@ -3,7 +3,7 @@ package dto
 
 // DeleteAccountInput is a data transfer structure defining contract between controller and usecase
 type DeleteAccountInput struct {
-	UserID uint `json:"user_id" validate:"required"`
+	UserID int `json:"user_id" validate:"required"`
 }
 
 // DeleteAccountOutput is a data transfer structure defining contract between controller and usecase
