@@ -5,6 +5,8 @@ import (
 	"messenger/internal/domain"
 	"messenger/internal/dto"
 	"messenger/pkg/jwt"
+
+	"golang.org/x/crypto/bcrypt"
 )
 
 // Login implements the login endpoint on the business layer.
@@ -17,8 +19,8 @@ func (u *Usecase) Login(input dto.LoginInput) (dto.LoginOutput, error) {
 		return dto.LoginOutput{}, fmt.Errorf("user get error: %w", err)
 	}
 
-	if user.Password != input.Password {
-		return dto.LoginOutput{}, domain.ErrUnauthorized
+	if err := bcrypt.CompareHashAndPassword(user.PasswordHash, []byte(input.Password)); err != nil {
+		return dto.LoginOutput{}, fmt.Errorf("%w: password hash comparing error: %w", domain.ErrUnauthorized, err)
 	}
 
 	tokenPair, err := jwt.GenerateTokenPair(user.ID, user.Username)

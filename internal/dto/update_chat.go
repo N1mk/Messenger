@@ -7,7 +7,7 @@ type UpdateChatInput struct {
 	ChatID    int      `json:"chat_id" validate:"required"`
 	OwnerID   int      `json:"owner_id" validate:"required"`
 	Usernames []string `json:"usernames" validate:"required"`
-	Name      string   `json:"name" validate:"required,max=20"`
+	Name      string   `json:"name" validate:"required,max=64"`
 }
 
 // UpdateChatOutput is a data transfer structure defining contract between controller and usecase

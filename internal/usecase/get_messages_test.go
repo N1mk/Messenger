@@ -21,7 +21,7 @@ func TestGetMessages(t *testing.T) {
 	}{
 		{
 			Name:                     "Ok",
-			Users:                    []domain.User{domain.User{ID: 0, Username: "Nimk", Email: "nimk@mail.com", Password: "1234"}},
+			Users:                    []domain.User{domain.User{ID: 0, Username: "Nimk", Email: "nimk@mail.com", PasswordHash: []byte("1234")}},
 			Chats:                    []domain.Chat{domain.Chat{ID: 0, Name: "Nimk's chat", Messages: []domain.Message{domain.Message{ChatID: 0, UserID: 0, Text: "Hello, world!"}}}},
 			Input:                    dto.GetMessagesInput{UserID: 0, ChatID: 0},
 			ExpectedMessagesInOutput: []domain.Message{domain.Message{ChatID: 0, UserID: 0, Text: "Hello, world!", CreatedAt: time.Now()}},

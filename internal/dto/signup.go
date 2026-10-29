@@ -7,7 +7,7 @@ import "messenger/pkg/jwt"
 type SignupInput struct {
 	Username string `json:"username" validate:"required,max=20"`
 	Email    string `json:"email" validate:"required,email"`
-	Password string `json:"password" validate:"required,min=6,max=20"`
+	Password string `json:"password" validate:"required,min=6,max=72,ascii"`
 }
 
 // SignupOutput is a data transfer structure defining contract between controller and usecase

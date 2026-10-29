@@ -4,7 +4,7 @@
     "inputFields": [
       "Username string `json:\"username\" validate:\"required,max=20\"`",
       "Email string `json:\"email\" validate:\"required,email\"`",
-      "Password string `json:\"password\" validate:\"required,min=6,max=20\"`"
+      "Password string `json:\"password\" validate:\"required,min=6,max=72,ascii\"`"
     ],
     "outputFields": [
       "ID int `json:\"id\"`",
@@ -15,7 +15,7 @@
     "name": "login",
     "inputFields": [
       "UserID int `json:\"user_id\" validate:\"required\"`",
-      "Password string `json:\"password\" validate:\"required,min=6,max=20\"`"
+      "Password string `json:\"password\" validate:\"required,min=6,max=72,ascii\"`"
     ],
     "outputFields": [
       "ID int `json:\"id\"`",
@@ -57,7 +57,7 @@
     "inputFields": [
       "CreatorID int `json:\"user_id\" validate:\"required\"`",
       "Usernames []string `json:\"usernames\" validate:\"required\"`",
-      "Name string `json:\"name\" validate:\"required,max=20\"`"
+      "Name string `json:\"name\" validate:\"required,max=64\"`"
     ],
     "outputFields": [
       "ChatID int `json:\"chat_id\"`"
@@ -79,7 +79,7 @@
       "ChatID int `json:\"chat_id\" validate:\"required\"`",
       "OwnerID int `json:\"owner_id\" validate:\"required\"`",
       "Usernames []string `json:\"usernames\" validate:\"required\"`",
-      "Name string `json:\"name\" validate:\"required,max=20\"`"
+      "Name string `json:\"name\" validate:\"required,max=64\"`"
     ],
     "outputFields": []
   },
@@ -87,9 +87,9 @@
     "name": "update account",
     "inputFields": [
       "UserID int `json:\"user_id\" validate:\"required\"`",
-      "Username string `json:\"username\" validate:\"required,max=20\"`",
+      "Username string `json:\"username\" validate:\"required,max=64\"`",
       "Email string `json:\"email\" validate:\"required,email\"`",
-      "Password string `json:\"password\" validate:\"required,min=6,max=20\"`"
+      "Password string `json:\"password\" validate:\"required,min=6,max=72,ascii\"`"
     ],
     "outputFields": []
   },

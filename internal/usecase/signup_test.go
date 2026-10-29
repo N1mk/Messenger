@@ -45,7 +45,7 @@ func TestSignup(t *testing.T) {
 
 			var users []domain.UserWithoutSlices
 			for _, user := range fp.Users {
-				users = append(users, domain.UserWithoutSlices{ID: user.ID, Username: user.Username, Email: user.Email, Password: user.Password})
+				users = append(users, domain.UserWithoutSlices{ID: user.ID, Username: user.Username, Email: user.Email, Password: string(user.PasswordHash)})
 			}
 
 			if !sliceoperations.CompareSlices(users, test.ExpectedUsers) {

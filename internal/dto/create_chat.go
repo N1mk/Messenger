@@ -5,7 +5,7 @@ package dto
 type CreateChatInput struct {
 	CreatorID int      `json:"user_id" validate:"required"`
 	Usernames []string `json:"usernames" validate:"required"`
-	Name      string   `json:"name" validate:"required,max=20"`
+	Name      string   `json:"name" validate:"required,max=64"`
 }
 
 // CreateChatOutput is a data transfer structure defining contract between controller and usecase

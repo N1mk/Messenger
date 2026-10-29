@@ -6,7 +6,7 @@ import "messenger/pkg/jwt"
 // LoginInput is a data transfer structure defining contract between controller and usecase
 type LoginInput struct {
 	UserID   int    `json:"user_id" validate:"required"`
-	Password string `json:"password" validate:"required,min=6,max=20"`
+	Password string `json:"password" validate:"required,min=6,max=72,ascii"`
 }
 
 // LoginOutput is a data transfer structure defining contract between controller and usecase

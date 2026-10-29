@@ -17,7 +17,7 @@ func TestLogin(t *testing.T) {
 	}{
 		{
 			Name:          "Ok",
-			Users:         []domain.User{domain.User{Username: "Nimk", Email: "nimk@mail.com", Password: "1234"}},
+			Users:         []domain.User{domain.User{Username: "Nimk", Email: "nimk@mail.com", PasswordHash: []byte("1234")}},
 			Input:         dto.LoginInput{UserID: 0, Password: "1234"},
 			ExpectedError: nil,
 		},
@@ -29,7 +29,7 @@ func TestLogin(t *testing.T) {
 		},
 		{
 			Name:          "Incorrect password",
-			Users:         []domain.User{domain.User{Username: "Nimk", Email: "nimk@mail.com", Password: "1234"}},
+			Users:         []domain.User{domain.User{Username: "Nimk", Email: "nimk@mail.com", PasswordHash: []byte("1234")}},
 			Input:         dto.LoginInput{UserID: 0, Password: "12345"},
 			ExpectedError: domain.ErrUnauthorized,
 		},

@@ -21,7 +21,7 @@ func TestCreateChat(t *testing.T) {
 	}{
 		{
 			Name:          "Ok",
-			Users:         []domain.User{domain.User{Username: "Nimk", Email: "nimk@mail.com", Password: "1234"}},
+			Users:         []domain.User{domain.User{Username: "Nimk", Email: "nimk@mail.com", PasswordHash: []byte("1234")}},
 			Chats:         []domain.Chat{},
 			Input:         dto.CreateChatInput{CreatorID: 0, Usernames: []string{"Nimk"}, Name: "Nimk's chat"},
 			ExpectedError: nil,

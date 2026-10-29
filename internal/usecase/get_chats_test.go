@@ -21,7 +21,7 @@ func TestGetChats(t *testing.T) {
 	}{
 		{
 			Name:                    "Ok",
-			Users:                   []domain.User{domain.User{ID: 0, Username: "Nimk", Email: "nimk@mail.com", Password: "1234", Chats: []domain.Chat{domain.Chat{ID: 0, Name: "Chat 1"}, domain.Chat{ID: 1, Name: "Chat 2"}}}},
+			Users:                   []domain.User{domain.User{ID: 0, Username: "Nimk", Email: "nimk@mail.com", PasswordHash: []byte("1234"), Chats: []domain.Chat{domain.Chat{ID: 0, Name: "Chat 1"}, domain.Chat{ID: 1, Name: "Chat 2"}}}},
 			Chats:                   []domain.Chat{domain.Chat{ID: 0, Name: "Chat 1"}, domain.Chat{ID: 1, Name: "Chat 2"}},
 			Input:                   dto.GetChatsInput{UserID: 0},
 			ExpectedChatsFromOutput: []domain.ChatWithoutSlices{domain.ChatWithoutSlices{ID: 0, Name: "Chat 1"}, domain.ChatWithoutSlices{ID: 1, Name: "Chat 2"}},
