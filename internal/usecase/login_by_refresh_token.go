@@ -38,12 +38,8 @@ func (u *Usecase) LoginByRefreshToken(input dto.LoginByRefreshTokenInput) (dto.L
 		return dto.LoginByRefreshTokenOutput{}, fmt.Errorf("jwt-token pair generation error: %w", err)
 	}
 
-	if err := u.postgres.RemoveRefreshToken(input.UserID); err != nil {
-		return dto.LoginByRefreshTokenOutput{}, fmt.Errorf("old refresh token removing error: %w", err)
-	}
-
-	if err := u.postgres.CreateRefreshToken(tokenPair.RefreshToken, input.UserID); err != nil {
-		return dto.LoginByRefreshTokenOutput{}, fmt.Errorf("refresh token adding: %w", err)
+	if err := u.postgres.ReplaceRefreshToken(tokenPair.RefreshToken, input.UserID); err != nil {
+		return dto.LoginByRefreshTokenOutput{}, fmt.Errorf("refresh token replacing error: %w", err)
 	}
 
 	return dto.LoginByRefreshTokenOutput{ID: user.ID, TokenPair: tokenPair}, nil

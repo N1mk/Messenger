@@ -28,12 +28,8 @@ func (u *Usecase) Login(input dto.LoginInput) (dto.LoginOutput, error) {
 		return dto.LoginOutput{}, fmt.Errorf("jwt-token pair generation error: %w", err)
 	}
 
-	if err := u.postgres.RemoveRefreshToken(input.UserID); err != nil {
-		return dto.LoginOutput{}, fmt.Errorf("old refresh token removing error: %w", err)
-	}
-
-	if err := u.postgres.CreateRefreshToken(tokenPair.RefreshToken, input.UserID); err != nil {
-		return dto.LoginOutput{}, fmt.Errorf("refresh token adding to database error: %w", err)
+	if err := u.postgres.ReplaceRefreshToken(tokenPair.RefreshToken, input.UserID); err != nil {
+		return dto.LoginOutput{}, fmt.Errorf("refresh token replacing error: %w", err)
 	}
 
 	return dto.LoginOutput{ID: user.ID, TokenPair: tokenPair}, nil

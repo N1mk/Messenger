@@ -53,6 +53,9 @@ type PostgresInterface interface {
 
 	// RemoveRefreshToken removes refresh token from refresh_tokens table.
 	RemoveRefreshToken(userID int) error
+
+	// ReplaceRefreshToken replaces the old user refresh token with the new one in transaction in the refresh_tokens table.
+	ReplaceRefreshToken(newtoken string, userID int) error
 }
 
 // Postgres implements PostgresInterface and containts *gorm.DB for work with postgres databases.
