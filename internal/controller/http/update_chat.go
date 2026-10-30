@@ -18,7 +18,7 @@ import (
 type updateChatRequest struct {
 	OwnerID   int      `json:"owner_id" validate:"required"`
 	Usernames []string `json:"usernames" validate:"required"`
-	Name      string   `json:"name" validate:"required,max=20"`
+	Name      string   `json:"name" validate:"required,max=64"`
 }
 
 // UpdateChat implements the update_chat endpoint on the controller layer.

@@ -54,7 +54,7 @@
             {
                 "name": "delete account",
                 "httpMethod": "delete",
-                "endpoint": "/users/{userID}"
+                "endpoint": "/users"
             }
         ]
     },
@@ -62,7 +62,7 @@
         {
             "name": "login",
             "requestFields": [
-                "Password string `json:\"password\" validate:\"required,min=6,max=20\"`"
+                "Password string `json:\"password\" validate:\"required,min=6,max=72,ascii\"`"
             ],
             "identCheck": false,
             "contextValues": [],
@@ -137,9 +137,9 @@
         {
             "name": "signup",
             "requestFields": [
-                "Username string `json:\"username\" validate:\"required,max=20\"`",
+                "Username string `json:\"username\" validate:\"required,max=64\"`",
                 "Email string `json:\"email\" validate:\"required,email\"`",
-                "Password string `json:\"password\" validate:\"required,min=6,max=20\"`"
+                "Password string `json:\"password\" validate:\"required,min=6,max=72,ascii\"`"
             ],
             "identCheck": false,
             "contextValues": [],
@@ -161,7 +161,7 @@
             "name": "create chat",
             "requestFields": [
                 "Usernames []string `json:\"usernames\" validate:\"required\"`",
-                "Name string `json:\"name\" validate:\"required,max=20\"`"
+                "Name string `json:\"name\" validate:\"required,max=64\"`"
             ],
             "identCheck": true,
             "contextValues": [
@@ -200,7 +200,7 @@
             "requestFields": [
                 "OwnerID int `json:\"owner_id\" validate:\"required\"`",
                 "Usernames []string `json:\"usernames\" validate:\"required\"`",
-                "Name string `json:\"name\" validate:\"required,max=20\"`"
+                "Name string `json:\"name\" validate:\"required,max=64\"`"
             ],
             "identCheck": true,
             "contextValues": [
@@ -220,9 +220,9 @@
         {
             "name": "update account",
             "requestFields": [
-                "Username string `json:\"username\" validate:\"required,max=20\"`",
+                "Username string `json:\"username\" validate:\"required,max=64\"`",
                 "Email string `json:\"email\" validate:\"required,email\"`",
-                "Password string `json:\"password\" validate:\"required,min=6,max=20\"`"
+                "Password string `json:\"password\" validate:\"required,min=6,max=72,ascii\"`"
             ],
             "identCheck": true,
             "contextValues": [
@@ -267,6 +267,7 @@
             "contextValues": [
                 "user ID"
             ],
+            "urlParams": [],
             "errorsToCheck": [
                 {
                     "name": "err not found",

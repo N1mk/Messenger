@@ -16,7 +16,7 @@ import (
 
 // loginRequest defines login request structure
 type loginRequest struct {
-	Password string `json:"password" validate:"required,min=6,max=20"`
+	Password string `json:"password" validate:"required,min=6,max=72,ascii"`
 }
 
 // Login implements the login endpoint on the controller layer.

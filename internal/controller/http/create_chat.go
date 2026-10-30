@@ -12,7 +12,7 @@ import (
 // createChatRequest defines create_chat request structure
 type createChatRequest struct {
 	Usernames []string `json:"usernames" validate:"required"`
-	Name      string   `json:"name" validate:"required,max=20"`
+	Name      string   `json:"name" validate:"required,max=64"`
 }
 
 // CreateChat implements the create_chat endpoint on the controller layer.

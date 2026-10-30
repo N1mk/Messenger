@@ -13,9 +13,9 @@ import (
 
 // signupRequest defines signup request structure
 type signupRequest struct {
-	Username string `json:"username" validate:"required,max=20"`
+	Username string `json:"username" validate:"required,max=64"`
 	Email    string `json:"email" validate:"required,email"`
-	Password string `json:"password" validate:"required,min=6,max=20"`
+	Password string `json:"password" validate:"required,min=6,max=72,ascii"`
 }
 
 // Signup implements the signup endpoint on the controller layer.
