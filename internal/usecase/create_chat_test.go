@@ -23,7 +23,7 @@ func TestCreateChat(t *testing.T) {
 			Name:          "Ok",
 			Users:         []domain.User{domain.User{Username: "Nimk", Email: "nimk@mail.com", PasswordHash: []byte("1234")}},
 			Chats:         []domain.Chat{},
-			Input:         dto.CreateChatInput{CreatorID: 0, Usernames: []string{"Nimk"}, Name: "Nimk's chat"},
+			Input:         dto.CreateChatInput{UserID: 0, Usernames: []string{"Nimk"}, Name: "Nimk's chat"},
 			ExpectedError: nil,
 			ExpectedChats: []domain.ChatWithoutSlices{domain.ChatWithoutSlices{ID: 0, Name: "Nimk's chat"}},
 		},

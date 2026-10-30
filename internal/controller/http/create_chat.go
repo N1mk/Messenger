@@ -4,7 +4,9 @@ package http
 
 import (
 	"encoding/json"
+	"errors"
 	"fmt"
+	"messenger/internal/domain"
 	"messenger/internal/dto"
 	"net/http"
 )
@@ -36,7 +38,7 @@ func (c *HTTPController) CreateChat(w http.ResponseWriter, r *http.Request) {
 
 	userID := r.Context().Value("user_id").(int)
 
-	var input dto.CreateChatInput = dto.CreateChatInput{Usernames: req.Usernames, Name: req.Name, CreatorID: userID}
+	var input dto.CreateChatInput = dto.CreateChatInput{Usernames: req.Usernames, Name: req.Name, UserID: userID}
 
 	if err := c.v.Struct(input); err != nil {
 		http.Error(w, fmt.Sprintf("validation error: %s", err.Error()), http.StatusBadRequest)
@@ -45,6 +47,10 @@ func (c *HTTPController) CreateChat(w http.ResponseWriter, r *http.Request) {
 
 	output, err := c.uc.CreateChat(input)
 	if err != nil {
+		if errors.Is(err, domain.ErrNotFound) {
+			http.Error(w, fmt.Sprintf("not found: %s", err.Error()), http.StatusNotFound)
+			return
+		}
 
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return

@@ -82,7 +82,7 @@ func (c *HTTPController) DefindEndpoints() {
 	c.r.Put("/chats/{chatID}", c.UpdateChat)
 	c.r.Put("/users", c.UpdateAccount)
 	c.r.Delete("/chats/{chatID}", c.DeleteChat)
-	c.r.Delete("/users/{userID}", c.DeleteAccount)
+	c.r.Delete("/users", c.DeleteAccount)
 
 }
 

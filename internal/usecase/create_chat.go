@@ -12,7 +12,7 @@ import (
 func (u *Usecase) CreateChat(input dto.CreateChatInput) (dto.CreateChatOutput, error) {
 	added := make(map[int]struct{})
 
-	creator, err := u.postgres.GetUserByID(input.CreatorID)
+	creator, err := u.postgres.GetUserByID(input.UserID)
 	if err != nil {
 		return dto.CreateChatOutput{}, fmt.Errorf("user getting error: %w", err)
 	}
@@ -34,7 +34,7 @@ func (u *Usecase) CreateChat(input dto.CreateChatInput) (dto.CreateChatOutput, e
 		users = append(users, *user)
 	}
 
-	chat, err := u.postgres.CreateChat(domain.Chat{Name: input.Name, OwnerID: input.CreatorID, Users: users})
+	chat, err := u.postgres.CreateChat(domain.Chat{Name: input.Name, OwnerID: input.UserID, Users: users})
 	if err != nil {
 		return dto.CreateChatOutput{}, fmt.Errorf("chat creation error: %w", err)
 	}

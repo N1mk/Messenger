@@ -3,7 +3,7 @@ package dto
 
 // CreateChatInput is a data transfer structure defining contract between controller and usecase
 type CreateChatInput struct {
-	CreatorID int      `json:"user_id" validate:"required"`
+	UserID    int      `json:"user_id" validate:"required"`
 	Usernames []string `json:"usernames" validate:"required"`
 	Name      string   `json:"name" validate:"required,max=64"`
 }

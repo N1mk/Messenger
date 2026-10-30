@@ -52,6 +52,10 @@ func (c *HTTPController) LoginByRefreshToken(w http.ResponseWriter, r *http.Requ
 			http.Error(w, fmt.Sprintf("incorrect refresh token: %s", err.Error()), http.StatusBadRequest)
 			return
 		}
+		if errors.Is(err, domain.ErrNotFound) {
+			http.Error(w, fmt.Sprintf("not found: %s", err.Error()), http.StatusNotFound)
+			return
+		}
 
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return

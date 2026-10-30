@@ -74,6 +74,11 @@
                     "name": "err unauthorized",
                     "httpDescription": "incorrect password",
                     "httpStatus": "status unauthorized"
+                },
+                {
+                    "name": "err not found",
+                    "httpDescription": "not found",
+                    "httpStatus": "status not found"
                 }
             ]
         },
@@ -92,6 +97,11 @@
                     "name": "err unauthorized",
                     "httpDescription": "incorrect refresh token",
                     "httpStatus": "status bad request"
+                },
+                {
+                    "name": "err not found",
+                    "httpDescription": "not found",
+                    "httpStatus": "status not found"
                 }
             ]
         },
@@ -168,7 +178,13 @@
                 "user ID"
             ],
             "urlParams": [],
-            "errorsToCheck": []
+            "errorsToCheck": [
+                {
+                    "name": "err not found",
+                    "httpDescription": "not found",
+                    "httpStatus": "status not found"
+                }
+            ]
         },
         {
             "name": "send message",

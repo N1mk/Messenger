@@ -52,6 +52,10 @@ func (c *HTTPController) Login(w http.ResponseWriter, r *http.Request) {
 			http.Error(w, fmt.Sprintf("incorrect password: %s", err.Error()), http.StatusUnauthorized)
 			return
 		}
+		if errors.Is(err, domain.ErrNotFound) {
+			http.Error(w, fmt.Sprintf("not found: %s", err.Error()), http.StatusNotFound)
+			return
+		}
 
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
