@@ -1,6 +1,7 @@
 package usecase
 
 import (
+	"crypto/sha256"
 	"fmt"
 	"messenger/internal/domain"
 	"messenger/internal/dto"
@@ -28,7 +29,8 @@ func (u *Usecase) Login(input dto.LoginInput) (dto.LoginOutput, error) {
 		return dto.LoginOutput{}, fmt.Errorf("jwt-token pair generation error: %w", err)
 	}
 
-	if err := u.postgres.ReplaceRefreshToken(tokenPair.RefreshToken, input.UserID); err != nil {
+	refreshTokenHash := sha256.Sum256([]byte(tokenPair.RefreshToken))
+	if err := u.postgres.ReplaceRefreshToken(refreshTokenHash[:], input.UserID); err != nil {
 		return dto.LoginOutput{}, fmt.Errorf("refresh token replacing error: %w", err)
 	}
 

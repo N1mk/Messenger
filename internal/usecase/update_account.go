@@ -14,7 +14,7 @@ import (
 func (u *Usecase) UpdateAccount(input dto.UpdateAccountInput) (dto.UpdateAccountOutput, error) {
 	passwordHash, err := bcrypt.GenerateFromPassword([]byte(input.Password), bcrypt.DefaultCost)
 	if err != nil {
-		return dto.UpdateAccountOutput{}, fmt.Errorf("password generation error: %w", err)
+		return dto.UpdateAccountOutput{}, fmt.Errorf("password hash generation error: %w", err)
 	}
 
 	if err := u.postgres.UpdateUser(&domain.User{ID: input.UserID, Username: input.Username, Email: input.Email, PasswordHash: passwordHash}); err != nil {

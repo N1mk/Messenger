@@ -1,6 +1,6 @@
 package postgres
 
 // Заглушка
-func (p *FakePostgres) CreateRefreshToken(token string, userID int) error {
+func (p *FakePostgres) CreateRefreshToken(tokenHash []byte, userID int) error {
 	return nil
 }

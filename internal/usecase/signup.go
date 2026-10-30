@@ -1,6 +1,7 @@
 package usecase
 
 import (
+	"crypto/sha256"
 	"fmt"
 	"messenger/internal/domain"
 	"messenger/internal/dto"
@@ -15,7 +16,7 @@ import (
 func (u *Usecase) Signup(input dto.SignupInput) (dto.SignupOutput, error) {
 	passwordHash, err := bcrypt.GenerateFromPassword([]byte(input.Password), bcrypt.DefaultCost)
 	if err != nil {
-		return dto.SignupOutput{}, fmt.Errorf("password generation error: %w", err)
+		return dto.SignupOutput{}, fmt.Errorf("password hash generation error: %w", err)
 	}
 
 	user := domain.User{Username: input.Username, PasswordHash: passwordHash, Email: input.Email}
@@ -30,7 +31,9 @@ func (u *Usecase) Signup(input dto.SignupInput) (dto.SignupOutput, error) {
 		return dto.SignupOutput{}, fmt.Errorf("jswt-token generation error: %w", err)
 	}
 
-	if err := u.postgres.ReplaceRefreshToken(tokenPair.RefreshToken, newUser.ID); err != nil {
+	refreshTokenHash := sha256.Sum256([]byte(tokenPair.RefreshToken))
+
+	if err := u.postgres.ReplaceRefreshToken(refreshTokenHash[:], newUser.ID); err != nil {
 		return dto.SignupOutput{}, fmt.Errorf("refresh token replacing error: %w", err)
 	}
 

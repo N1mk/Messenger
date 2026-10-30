@@ -46,16 +46,16 @@ type PostgresInterface interface {
 	GetMessages(chatID int) ([]*domain.Message, error)
 
 	// RefreshTokenExists checks if refresh token exists in the refresh_tokens table.
-	RefreshTokenExists(token string) (ok bool, err error)
+	RefreshTokenExists(tokenHash []byte) (ok bool, err error)
 
 	// СreateRefreshToken creates new element in the refresh_tokens table.
-	CreateRefreshToken(token string, userID int) error
+	CreateRefreshToken(tokenHash []byte, userID int) error
 
 	// RemoveRefreshToken removes refresh token from refresh_tokens table.
 	RemoveRefreshToken(userID int) error
 
 	// ReplaceRefreshToken replaces the old user refresh token with the new one in transaction in the refresh_tokens table.
-	ReplaceRefreshToken(newtoken string, userID int) error
+	ReplaceRefreshToken(newtokenHash []byte, userID int) error
 }
 
 // Postgres implements PostgresInterface and containts *gorm.DB for work with postgres databases.
