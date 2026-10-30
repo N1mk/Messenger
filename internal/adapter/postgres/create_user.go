@@ -1,6 +1,7 @@
 package postgres
 
 import (
+	"context"
 	"errors"
 	"messenger/internal/domain"
 
@@ -8,8 +9,8 @@ import (
 )
 
 // СreateUser creates new element in the users table.
-func (p *Postgres) CreateUser(user domain.User) (*domain.User, error) {
-	err := p.db.Model(&domain.User{}).Create(&user).Error
+func (p *Postgres) CreateUser(ctx context.Context, user domain.User) (*domain.User, error) {
+	err := p.db.WithContext(ctx).Model(&domain.User{}).Create(&user).Error
 
 	if err != nil {
 		if errors.Is(err, gorm.ErrDuplicatedKey) {

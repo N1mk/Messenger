@@ -39,7 +39,7 @@ func (c *HTTPController) Signup(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	output, err := c.uc.Signup(input)
+	output, err := c.uc.Signup(r.Context(), input)
 	if err != nil {
 		if errors.Is(err, domain.ErrDuplicated) {
 			http.Error(w, fmt.Sprintf("duplicated: %s", err.Error()), http.StatusBadRequest)

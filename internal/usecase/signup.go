@@ -1,6 +1,7 @@
 package usecase
 
 import (
+	"context"
 	"crypto/sha256"
 	"fmt"
 	"messenger/internal/domain"
@@ -13,7 +14,7 @@ import (
 // Signup implements the signup endpoint on the business layer.
 // The method receives dto.SignupInput and returns dto.SignupOutput and error.
 // It creates new user from input and rutruns user's ID and JWT-Token pair.
-func (u *Usecase) Signup(input dto.SignupInput) (dto.SignupOutput, error) {
+func (u *Usecase) Signup(ctx context.Context, input dto.SignupInput) (dto.SignupOutput, error) {
 	passwordHash, err := bcrypt.GenerateFromPassword([]byte(input.Password), bcrypt.DefaultCost)
 	if err != nil {
 		return dto.SignupOutput{}, fmt.Errorf("password hash generation error: %w", err)
@@ -21,7 +22,7 @@ func (u *Usecase) Signup(input dto.SignupInput) (dto.SignupOutput, error) {
 
 	user := domain.User{Username: input.Username, PasswordHash: passwordHash, Email: input.Email}
 
-	newUser, err := u.postgres.CreateUser(user)
+	newUser, err := u.postgres.CreateUser(ctx, user)
 	if err != nil {
 		return dto.SignupOutput{}, fmt.Errorf("user creation error: %w", err)
 	}
@@ -33,7 +34,7 @@ func (u *Usecase) Signup(input dto.SignupInput) (dto.SignupOutput, error) {
 
 	refreshTokenHash := sha256.Sum256([]byte(tokenPair.RefreshToken))
 
-	if err := u.postgres.ReplaceRefreshToken(refreshTokenHash[:], newUser.ID); err != nil {
+	if err := u.postgres.ReplaceRefreshToken(ctx, refreshTokenHash[:], newUser.ID); err != nil {
 		return dto.SignupOutput{}, fmt.Errorf("refresh token replacing error: %w", err)
 	}
 

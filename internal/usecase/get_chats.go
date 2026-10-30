@@ -1,6 +1,7 @@
 package usecase
 
 import (
+	"context"
 	"fmt"
 	"messenger/internal/domain"
 	"messenger/internal/dto"
@@ -9,8 +10,8 @@ import (
 // GetChats implements the get_chats endpoint on the business layer.
 // The method receives dto.GetChatsInput and returns dto.GetChatsOutput and error.
 // It returns all chats, in which the user is membered.
-func (u *Usecase) GetChats(input dto.GetChatsInput) (dto.GetChatsOutput, error) {
-	user, err := u.postgres.GetUserByID(input.UserID)
+func (u *Usecase) GetChats(ctx context.Context, input dto.GetChatsInput) (dto.GetChatsOutput, error) {
+	user, err := u.postgres.GetUserByID(ctx, input.UserID)
 	if err != nil {
 		return dto.GetChatsOutput{}, fmt.Errorf("user getting error: %w", err)
 	}

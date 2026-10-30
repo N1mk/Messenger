@@ -55,7 +55,7 @@ func (c *HTTPController) UpdateChat(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	output, err := c.uc.UpdateChat(input)
+	output, err := c.uc.UpdateChat(r.Context(), input)
 	if err != nil {
 		if errors.Is(err, domain.ErrNotFound) {
 			http.Error(w, fmt.Sprintf("not found: %s", err.Error()), http.StatusNotFound)

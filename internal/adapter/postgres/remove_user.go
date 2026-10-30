@@ -1,6 +1,7 @@
 package postgres
 
 import (
+	"context"
 	"errors"
 	"messenger/internal/domain"
 
@@ -8,15 +9,15 @@ import (
 )
 
 // RemoveUser removes user from the users table by id.
-func (p *Postgres) RemoveUser(id int) error {
-	if err := p.db.Exec("DELETE FROM user_chats WHERE user_id = ?", id).Error; err != nil {
+func (p *Postgres) RemoveUser(ctx context.Context, id int) error {
+	if err := p.db.WithContext(ctx).Exec("DELETE FROM user_chats WHERE user_id = ?", id).Error; err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			return domain.ErrNotFound
 		}
 		return err
 	}
 
-	if err := p.db.Delete(&domain.User{}, id).Error; err != nil {
+	if err := p.db.WithContext(ctx).Delete(&domain.User{}, id).Error; err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			return domain.ErrNotFound
 		}

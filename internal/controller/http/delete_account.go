@@ -29,7 +29,7 @@ func (c *HTTPController) DeleteAccount(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	output, err := c.uc.DeleteAccount(input)
+	output, err := c.uc.DeleteAccount(r.Context(), input)
 	if err != nil {
 		if errors.Is(err, domain.ErrNotFound) {
 			http.Error(w, fmt.Sprintf("not found: %s", err.Error()), http.StatusNotFound)

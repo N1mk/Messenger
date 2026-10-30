@@ -38,7 +38,7 @@ func (c *HTTPController) DeleteChat(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	output, err := c.uc.DeleteChat(input)
+	output, err := c.uc.DeleteChat(r.Context(), input)
 	if err != nil {
 		if errors.Is(err, domain.ErrUserIsNotInChat) {
 			http.Error(w, fmt.Sprintf("user is not in the chat: %s", err.Error()), http.StatusUnauthorized)

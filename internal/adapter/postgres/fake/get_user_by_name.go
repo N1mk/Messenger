@@ -1,8 +1,11 @@
 package postgres
 
-import "messenger/internal/domain"
+import (
+	"context"
+	"messenger/internal/domain"
+)
 
-func (p *FakePostgres) GetUserByName(username string) (*domain.User, error) {
+func (p *FakePostgres) GetUserByName(_ context.Context, username string) (*domain.User, error) {
 	for _, user := range p.Users {
 		if user.Username == username {
 			return &user, nil

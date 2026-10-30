@@ -1,6 +1,7 @@
 package usecase
 
 import (
+	"context"
 	"crypto/sha256"
 	"fmt"
 	"messenger/internal/domain"
@@ -12,15 +13,15 @@ import (
 // The method receives dto.LoginByRefreshTokenInput and returns dto.LoginByRefreshTokenOutput and error.
 // It chceks if refresh token exists and valid and returns user's ID and JWT-Token pair.
 // If refresh token is not exist, method returns domain.ErrUnauthorized.
-func (u *Usecase) LoginByRefreshToken(input dto.LoginByRefreshTokenInput) (dto.LoginByRefreshTokenOutput, error) {
-	user, err := u.postgres.GetUserByID(input.UserID)
+func (u *Usecase) LoginByRefreshToken(ctx context.Context, input dto.LoginByRefreshTokenInput) (dto.LoginByRefreshTokenOutput, error) {
+	user, err := u.postgres.GetUserByID(ctx, input.UserID)
 	if err != nil {
 		return dto.LoginByRefreshTokenOutput{}, fmt.Errorf("user get error: %w", err)
 	}
 
 	refreshTokenHash := sha256.Sum256([]byte(input.RefreshToken))
 
-	if ok, err := u.postgres.RefreshTokenExists(refreshTokenHash[:]); !ok {
+	if ok, err := u.postgres.RefreshTokenExists(ctx, refreshTokenHash[:]); !ok {
 		if err != nil {
 			return dto.LoginByRefreshTokenOutput{}, fmt.Errorf("refresh token exist check error: %w", err)
 		}
@@ -43,7 +44,7 @@ func (u *Usecase) LoginByRefreshToken(input dto.LoginByRefreshTokenInput) (dto.L
 
 	newRefreshTokenHash := sha256.Sum256([]byte(tokenPair.RefreshToken))
 
-	if err := u.postgres.ReplaceRefreshToken(newRefreshTokenHash[:], input.UserID); err != nil {
+	if err := u.postgres.ReplaceRefreshToken(ctx, newRefreshTokenHash[:], input.UserID); err != nil {
 		return dto.LoginByRefreshTokenOutput{}, fmt.Errorf("refresh token replacing error: %w", err)
 	}
 

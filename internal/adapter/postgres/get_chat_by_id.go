@@ -1,6 +1,7 @@
 package postgres
 
 import (
+	"context"
 	"errors"
 	"messenger/internal/domain"
 
@@ -8,10 +9,10 @@ import (
 )
 
 // GetChatByID selects chat from the chats table by id.
-func (p *Postgres) GetChatByID(id int) (*domain.Chat, error) {
+func (p *Postgres) GetChatByID(ctx context.Context, id int) (*domain.Chat, error) {
 	var chat domain.Chat
 
-	err := p.db.Preload("Users").First(&chat, id).Error
+	err := p.db.WithContext(ctx).Preload("Users").First(&chat, id).Error
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			return nil, domain.ErrNotFound

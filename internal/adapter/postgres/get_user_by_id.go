@@ -1,6 +1,7 @@
 package postgres
 
 import (
+	"context"
 	"errors"
 	"messenger/internal/domain"
 
@@ -8,9 +9,9 @@ import (
 )
 
 // GetUserByID selects user from the users table by id.
-func (p *Postgres) GetUserByID(id int) (*domain.User, error) {
+func (p *Postgres) GetUserByID(ctx context.Context, id int) (*domain.User, error) {
 	var user domain.User
-	err := p.db.Preload("Chats").First(&user, id).Error
+	err := p.db.WithContext(ctx).Preload("Chats").First(&user, id).Error
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			return nil, domain.ErrNotFound

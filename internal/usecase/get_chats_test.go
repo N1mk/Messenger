@@ -1,6 +1,7 @@
 package usecase
 
 import (
+	"context"
 	"errors"
 	postgres "messenger/internal/adapter/postgres/fake"
 	"messenger/internal/domain"
@@ -37,7 +38,7 @@ func TestGetChats(t *testing.T) {
 
 			uc := NewUsecase(fp)
 
-			output, err := uc.GetChats(test.Input)
+			output, err := uc.GetChats(context.TODO(), test.Input)
 
 			if !errors.Is(err, test.ExpectedError) {
 				t.Errorf("Expected error: %s | Got: %s", test.ExpectedError.Error(), err.Error())

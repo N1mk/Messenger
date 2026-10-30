@@ -1,6 +1,7 @@
 package usecase
 
 import (
+	"context"
 	"crypto/sha256"
 	"fmt"
 	"messenger/internal/domain"
@@ -14,8 +15,8 @@ import (
 // The method receives dto.LoginInput and returns dto.LoginOutput and error.
 // It chceks if password is correct and returns user's ID and JWT-Token pair.
 // If password if incorrect, method returns domain.ErrIncorrectPassword.
-func (u *Usecase) Login(input dto.LoginInput) (dto.LoginOutput, error) {
-	user, err := u.postgres.GetUserByID(input.UserID)
+func (u *Usecase) Login(ctx context.Context, input dto.LoginInput) (dto.LoginOutput, error) {
+	user, err := u.postgres.GetUserByID(ctx, input.UserID)
 	if err != nil {
 		return dto.LoginOutput{}, fmt.Errorf("user get error: %w", err)
 	}
@@ -30,7 +31,7 @@ func (u *Usecase) Login(input dto.LoginInput) (dto.LoginOutput, error) {
 	}
 
 	refreshTokenHash := sha256.Sum256([]byte(tokenPair.RefreshToken))
-	if err := u.postgres.ReplaceRefreshToken(refreshTokenHash[:], input.UserID); err != nil {
+	if err := u.postgres.ReplaceRefreshToken(ctx, refreshTokenHash[:], input.UserID); err != nil {
 		return dto.LoginOutput{}, fmt.Errorf("refresh token replacing error: %w", err)
 	}
 

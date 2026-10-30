@@ -1,8 +1,11 @@
 package postgres
 
-import "messenger/internal/domain"
+import (
+	"context"
+	"messenger/internal/domain"
+)
 
-func (p *FakePostgres) UpdateChat(chat *domain.Chat) error {
+func (p *FakePostgres) UpdateChat(_ context.Context, chat *domain.Chat) error {
 	p.Chats[chat.ID] = *chat
 
 	return nil

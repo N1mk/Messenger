@@ -1,5 +1,7 @@
 package postgres
 
-func (p *FakePostgres) GetChatsCount() int {
+import "context"
+
+func (p *FakePostgres) GetChatsCount(_ context.Context) int {
 	return len(p.Chats)
 }

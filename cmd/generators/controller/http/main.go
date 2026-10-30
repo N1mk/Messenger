@@ -74,7 +74,7 @@ func (c *HTTPController) {{.UpperCasedName}}(w http.ResponseWriter, r *http.Requ
 		return
 	}
 
-	output, err := c.uc.{{.UpperCasedName}}(input)
+	output, err := c.uc.{{.UpperCasedName}}(r.Context(), input)
 	if err != nil {
 		{{.ErrorsParsing}}
 		http.Error(w, err.Error(), http.StatusInternalServerError)

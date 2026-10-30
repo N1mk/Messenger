@@ -46,7 +46,7 @@ func (c *HTTPController) LoginByRefreshToken(w http.ResponseWriter, r *http.Requ
 		return
 	}
 
-	output, err := c.uc.LoginByRefreshToken(input)
+	output, err := c.uc.LoginByRefreshToken(r.Context(), input)
 	if err != nil {
 		if errors.Is(err, domain.ErrUnauthorized) {
 			http.Error(w, fmt.Sprintf("incorrect refresh token: %s", err.Error()), http.StatusBadRequest)

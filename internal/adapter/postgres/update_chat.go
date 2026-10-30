@@ -1,6 +1,7 @@
 package postgres
 
 import (
+	"context"
 	"errors"
 	"fmt"
 	"messenger/internal/domain"
@@ -9,8 +10,8 @@ import (
 )
 
 // UpdateChat updates chat with correct id.
-func (p *Postgres) UpdateChat(chat *domain.Chat) error {
-	if err := p.db.Session(&gorm.Session{FullSaveAssociations: true}).Model(&domain.Chat{}).Where("id = ?", chat.ID).Updates(&domain.Chat{OwnerID: chat.OwnerID, Name: chat.Name}).Error; err != nil {
+func (p *Postgres) UpdateChat(ctx context.Context, chat *domain.Chat) error {
+	if err := p.db.WithContext(ctx).Session(&gorm.Session{FullSaveAssociations: true}).Model(&domain.Chat{}).Where("id = ?", chat.ID).Updates(&domain.Chat{OwnerID: chat.OwnerID, Name: chat.Name}).Error; err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			return fmt.Errorf("chat basic fields updating error: %w", domain.ErrNotFound)
 		}
@@ -19,7 +20,7 @@ func (p *Postgres) UpdateChat(chat *domain.Chat) error {
 
 	usersInChatIDs := make([]int, 0)
 
-	if err := p.db.Raw("SELECT user_id FROM user_chats WHERE chat_id = ?", chat.ID).Scan(&usersInChatIDs).Error; err != nil {
+	if err := p.db.WithContext(ctx).Raw("SELECT user_id FROM user_chats WHERE chat_id = ?", chat.ID).Scan(&usersInChatIDs).Error; err != nil {
 		return fmt.Errorf("chat users selection error: %w", err)
 	}
 
@@ -31,7 +32,7 @@ deleteLoop:
 			}
 		}
 
-		if err := p.db.Exec("DELETE FROM user_chats WHERE chat_id = ? AND user_id = ?", chat.ID, id).Error; err != nil {
+		if err := p.db.WithContext(ctx).Exec("DELETE FROM user_chats WHERE chat_id = ? AND user_id = ?", chat.ID, id).Error; err != nil {
 			return fmt.Errorf("user removing from chat error: %w", err)
 		}
 	}
@@ -44,7 +45,7 @@ addLoop:
 			}
 		}
 
-		if err := p.db.Exec("INSERT INTO user_chats (chat_id, user_id) VALUES (?, ?)", chat.ID, user.ID).Error; err != nil {
+		if err := p.db.WithContext(ctx).Exec("INSERT INTO user_chats (chat_id, user_id) VALUES (?, ?)", chat.ID, user.ID).Error; err != nil {
 			return fmt.Errorf("user adding to chat error: %w", err)
 		}
 	}

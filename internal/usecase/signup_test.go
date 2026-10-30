@@ -1,6 +1,7 @@
 package usecase
 
 import (
+	"context"
 	"errors"
 	postgres "messenger/internal/adapter/postgres/fake"
 	"messenger/internal/domain"
@@ -33,7 +34,7 @@ func TestSignup(t *testing.T) {
 
 			uc := NewUsecase(fp)
 
-			_, err := uc.Signup(test.Input)
+			_, err := uc.Signup(context.TODO(), test.Input)
 
 			if !errors.Is(err, test.ExpectedError) {
 				t.Errorf("Expected error: %s | Got: %s", test.ExpectedError.Error(), err.Error())

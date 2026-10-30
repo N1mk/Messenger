@@ -1,6 +1,8 @@
 package postgres
 
+import "context"
+
 // Заглушка
-func (p *FakePostgres) RemoveRefreshToken(userID int) error {
+func (p *FakePostgres) RemoveRefreshToken(_ context.Context, userID int) error {
 	return nil
 }
