@@ -19,7 +19,7 @@ func (u *Usecase) GetMessages(ctx context.Context, input dto.GetMessagesInput) (
 		return dto.GetMessagesOutput{}, domain.ErrUserIsNotInChat
 	}
 
-	messages, err := u.postgres.GetMessages(ctx, input.ChatID)
+	messages, err := u.p.GetMessages(ctx, input.ChatID)
 	if err != nil {
 		return dto.GetMessagesOutput{}, fmt.Errorf("messages getting error: %w", err)
 	}

@@ -13,7 +13,7 @@ import (
 func (u *Usecase) CreateChat(ctx context.Context, input dto.CreateChatInput) (dto.CreateChatOutput, error) {
 	added := make(map[int]struct{})
 
-	creator, err := u.postgres.GetUserByID(ctx, input.UserID)
+	creator, err := u.p.GetUserByID(ctx, input.UserID)
 	if err != nil {
 		return dto.CreateChatOutput{}, fmt.Errorf("user getting error: %w", err)
 	}
@@ -21,7 +21,7 @@ func (u *Usecase) CreateChat(ctx context.Context, input dto.CreateChatInput) (dt
 	users := []domain.User{*creator}
 
 	for _, username := range input.Usernames {
-		user, err := u.postgres.GetUserByName(ctx, username)
+		user, err := u.p.GetUserByName(ctx, username)
 		if err != nil {
 			return dto.CreateChatOutput{}, fmt.Errorf("user getting error: %w", err)
 		}
@@ -35,14 +35,14 @@ func (u *Usecase) CreateChat(ctx context.Context, input dto.CreateChatInput) (dt
 		users = append(users, *user)
 	}
 
-	chat, err := u.postgres.CreateChat(ctx, domain.Chat{Name: input.Name, OwnerID: input.UserID, Users: users})
+	chat, err := u.p.CreateChat(ctx, domain.Chat{Name: input.Name, OwnerID: input.UserID, Users: users})
 	if err != nil {
 		return dto.CreateChatOutput{}, fmt.Errorf("chat creation error: %w", err)
 	}
 
 	creator.Chats = append(creator.Chats, *chat)
 
-	err = u.postgres.UpdateUser(ctx, creator)
+	err = u.p.UpdateUser(ctx, creator)
 	if err != nil {
 		return dto.CreateChatOutput{}, fmt.Errorf("user update error: %w", err)
 	}

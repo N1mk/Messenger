@@ -6,6 +6,7 @@ import (
 	postgres "messenger/internal/adapter/postgres/fake"
 	"messenger/internal/domain"
 	"messenger/internal/dto"
+	"messenger/pkg/jwt"
 	sliceoperations "messenger/pkg/slice_operations"
 	"testing"
 	"time"
@@ -41,7 +42,7 @@ func TestGetMessages(t *testing.T) {
 
 			test.ExpectedMessagesInOutput[0].CreatedAt = test.Chats[0].Messages[0].CreatedAt
 
-			uc := NewUsecase(fp)
+			uc := NewUsecase(fp, jwt.NewJWT())
 
 			output, err := uc.GetMessages(context.TODO(), test.Input)
 

@@ -8,7 +8,8 @@
     ],
     "outputFields": [
       "ID int `json:\"id\"`",
-      "TokenPair jwt.TokenPair `json:\"token_pair\"`"
+      "AccesToken string `json:\"accesToken\"`",
+      "RefreshToken string `json:\"refreshToken\"`"
     ]
   },
   {
@@ -19,7 +20,8 @@
     ],
     "outputFields": [
       "ID int `json:\"id\"`",
-      "TokenPair jwt.TokenPair `json:\"token_pair\"`"
+      "AccesToken string `json:\"accesToken\"`",
+      "RefreshToken string `json:\"refreshToken\"`"
     ]
   },
   {
@@ -30,7 +32,8 @@
     ],
     "outputFields": [
       "ID int `json:\"id\"`",
-      "TokenPair jwt.TokenPair `json:\"token_pair\"`"
+      "AccesToken string `json:\"accesToken\"`",
+      "RefreshToken string `json:\"refreshToken\"`"
     ]
   },
   {

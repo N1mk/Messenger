@@ -18,7 +18,7 @@ func (u *Usecase) UpdateAccount(ctx context.Context, input dto.UpdateAccountInpu
 		return dto.UpdateAccountOutput{}, fmt.Errorf("password hash generation error: %w", err)
 	}
 
-	if err := u.postgres.UpdateUser(ctx, &domain.User{ID: input.UserID, Username: input.Username, Email: input.Email, PasswordHash: passwordHash}); err != nil {
+	if err := u.p.UpdateUser(ctx, &domain.User{ID: input.UserID, Username: input.Username, Email: input.Email, PasswordHash: passwordHash}); err != nil {
 		return dto.UpdateAccountOutput{}, fmt.Errorf("user updating error: %w", err)
 	}
 

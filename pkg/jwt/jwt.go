@@ -22,18 +22,19 @@ type refreshTokenClaims struct {
 	jwt.RegisteredClaims
 }
 
-type TokenPair struct {
-	AccesToken   string
-	RefreshToken string
+type JWT struct{}
+
+func NewJWT() *JWT {
+	return &JWT{}
 }
 
-func GenerateTokenPair(id int, username string) (TokenPair, error) {
+func (j *JWT) GenerateTokenPair(id int, username string) (accesToken string, refreshToken string, err error) {
 	signingKey := os.Getenv("JWT_SIG_KEY")
 	if signingKey == "" {
-		return TokenPair{}, fmt.Errorf("no jwt signing key in env variables")
+		return "", "", fmt.Errorf("no jwt signing key in env variables")
 	}
 
-	accesToken := jwt.NewWithClaims(jwt.SigningMethodHS256, &accesTokenClaims{
+	unsignedAccesToken := jwt.NewWithClaims(jwt.SigningMethodHS256, &accesTokenClaims{
 		ID:       id,
 		Username: username,
 		RegisteredClaims: jwt.RegisteredClaims{
@@ -43,12 +44,7 @@ func GenerateTokenPair(id int, username string) (TokenPair, error) {
 		},
 	})
 
-	accesTokenStr, err := accesToken.SignedString([]byte(signingKey))
-	if err != nil {
-		return TokenPair{}, err
-	}
-
-	refreshToken := jwt.NewWithClaims(jwt.SigningMethodHS256, &refreshTokenClaims{
+	unsignedRefreshToken := jwt.NewWithClaims(jwt.SigningMethodHS256, &refreshTokenClaims{
 		ID: id,
 		RegisteredClaims: jwt.RegisteredClaims{
 			ExpiresAt: jwt.NewNumericDate(time.Now().Add(time.Hour * 720)),
@@ -58,15 +54,20 @@ func GenerateTokenPair(id int, username string) (TokenPair, error) {
 	},
 	)
 
-	refreshTokenStr, err := refreshToken.SignedString([]byte(signingKey))
+	accesToken, err = unsignedAccesToken.SignedString([]byte(signingKey))
 	if err != nil {
-		return TokenPair{}, err
+		return "", "", err
 	}
 
-	return TokenPair{AccesToken: accesTokenStr, RefreshToken: refreshTokenStr}, nil
+	refreshToken, err = unsignedRefreshToken.SignedString([]byte(signingKey))
+	if err != nil {
+		return "", "", err
+	}
+
+	return accesToken, refreshToken, nil
 }
 
-func ParseAccesToken(accesToken string) (id int, username string, err error) {
+func (j *JWT) ParseAccesToken(accesToken string) (id int, username string, err error) {
 	signingKey := os.Getenv("JWT_SIG_KEY")
 	if signingKey == "" {
 		return 0, "", fmt.Errorf("no jwt signing key in env variables")
@@ -91,7 +92,7 @@ func ParseAccesToken(accesToken string) (id int, username string, err error) {
 	return tokenClaims.ID, tokenClaims.Username, nil
 }
 
-func ParseRefreshToken(refreshToken string) (id int, err error) {
+func (j *JWT) ParseRefreshToken(refreshToken string) (id int, err error) {
 	signingKey := os.Getenv("JWT_SIG_KEY")
 	if signingKey == "" {
 		return 0, fmt.Errorf("no jwt signing key in env variables")
@@ -116,7 +117,7 @@ func ParseRefreshToken(refreshToken string) (id int, err error) {
 	return tokenClaims.ID, err
 }
 
-func IdentifyMiddleware(next http.Handler) http.Handler {
+func (j *JWT) IdentifyMiddleware(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		header := r.Header.Get("Authorization")
 		if header == "" {
@@ -131,7 +132,7 @@ func IdentifyMiddleware(next http.Handler) http.Handler {
 			return
 		}
 
-		userID, username, err := ParseAccesToken(headerParts[1])
+		userID, username, err := j.ParseAccesToken(headerParts[1])
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusUnauthorized)
 			return

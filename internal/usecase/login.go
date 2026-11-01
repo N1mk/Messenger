@@ -6,7 +6,6 @@ import (
 	"fmt"
 	"messenger/internal/domain"
 	"messenger/internal/dto"
-	"messenger/pkg/jwt"
 
 	"golang.org/x/crypto/bcrypt"
 )
@@ -14,9 +13,9 @@ import (
 // Login implements the login endpoint on the business layer.
 // The method receives dto.LoginInput and returns dto.LoginOutput and error.
 // It chceks if password is correct and returns user's ID and JWT-Token pair.
-// If password if incorrect, method returns domain.ErrIncorrectPassword.
+// If password if incorrect, method returns domain.ErrUnauthorized.
 func (u *Usecase) Login(ctx context.Context, input dto.LoginInput) (dto.LoginOutput, error) {
-	user, err := u.postgres.GetUserByID(ctx, input.UserID)
+	user, err := u.p.GetUserByID(ctx, input.UserID)
 	if err != nil {
 		return dto.LoginOutput{}, fmt.Errorf("user get error: %w", err)
 	}
@@ -25,15 +24,15 @@ func (u *Usecase) Login(ctx context.Context, input dto.LoginInput) (dto.LoginOut
 		return dto.LoginOutput{}, fmt.Errorf("%w: password hash comparing error: %w", domain.ErrUnauthorized, err)
 	}
 
-	tokenPair, err := jwt.GenerateTokenPair(user.ID, user.Username)
+	accesToken, refreshToken, err := u.ti.GenerateTokenPair(user.ID, user.Username)
 	if err != nil {
 		return dto.LoginOutput{}, fmt.Errorf("jwt-token pair generation error: %w", err)
 	}
 
-	refreshTokenHash := sha256.Sum256([]byte(tokenPair.RefreshToken))
-	if err := u.postgres.ReplaceRefreshToken(ctx, refreshTokenHash[:], input.UserID); err != nil {
+	refreshTokenHash := sha256.Sum256([]byte(refreshToken))
+	if err := u.p.ReplaceRefreshToken(ctx, refreshTokenHash[:], input.UserID); err != nil {
 		return dto.LoginOutput{}, fmt.Errorf("refresh token replacing error: %w", err)
 	}
 
-	return dto.LoginOutput{ID: user.ID, TokenPair: tokenPair}, nil
+	return dto.LoginOutput{ID: user.ID, AccesToken: accesToken, RefreshToken: refreshToken}, nil
 }

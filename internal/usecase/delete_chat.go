@@ -19,7 +19,7 @@ func (u *Usecase) DeleteChat(ctx context.Context, input dto.DeleteChatInput) (dt
 		return dto.DeleteChatOutput{}, domain.ErrUserIsNotInChat
 	}
 
-	if err := u.postgres.RemoveChat(ctx, input.ChatID); err != nil {
+	if err := u.p.RemoveChat(ctx, input.ChatID); err != nil {
 		return dto.DeleteChatOutput{}, fmt.Errorf("chat removing error: %w", err)
 	}
 

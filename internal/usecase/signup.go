@@ -6,7 +6,6 @@ import (
 	"fmt"
 	"messenger/internal/domain"
 	"messenger/internal/dto"
-	"messenger/pkg/jwt"
 
 	"golang.org/x/crypto/bcrypt"
 )
@@ -22,21 +21,21 @@ func (u *Usecase) Signup(ctx context.Context, input dto.SignupInput) (dto.Signup
 
 	user := domain.User{Username: input.Username, PasswordHash: passwordHash, Email: input.Email}
 
-	newUser, err := u.postgres.CreateUser(ctx, user)
+	newUser, err := u.p.CreateUser(ctx, user)
 	if err != nil {
 		return dto.SignupOutput{}, fmt.Errorf("user creation error: %w", err)
 	}
 
-	tokenPair, err := jwt.GenerateTokenPair(newUser.ID, newUser.Username)
+	accesToken, refreshToken, err := u.ti.GenerateTokenPair(newUser.ID, newUser.Username)
 	if err != nil {
 		return dto.SignupOutput{}, fmt.Errorf("jswt-token generation error: %w", err)
 	}
 
-	refreshTokenHash := sha256.Sum256([]byte(tokenPair.RefreshToken))
+	refreshTokenHash := sha256.Sum256([]byte(refreshToken))
 
-	if err := u.postgres.ReplaceRefreshToken(ctx, refreshTokenHash[:], newUser.ID); err != nil {
+	if err := u.p.ReplaceRefreshToken(ctx, refreshTokenHash[:], newUser.ID); err != nil {
 		return dto.SignupOutput{}, fmt.Errorf("refresh token replacing error: %w", err)
 	}
 
-	return dto.SignupOutput{ID: newUser.ID, TokenPair: tokenPair}, nil
+	return dto.SignupOutput{ID: newUser.ID, AccesToken: accesToken, RefreshToken: refreshToken}, nil
 }

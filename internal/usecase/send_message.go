@@ -20,14 +20,14 @@ func (u *Usecase) SendMessage(ctx context.Context, input dto.SendMessageInput) (
 		return dto.SendMessageOutput{}, domain.ErrUserIsNotInChat
 	}
 
-	chat, err := u.postgres.GetChatByID(ctx, input.ChatID)
+	chat, err := u.p.GetChatByID(ctx, input.ChatID)
 	if err != nil {
 		return dto.SendMessageOutput{}, fmt.Errorf("chat getting error: %w", err)
 	}
 
 	chat.Messages = append(chat.Messages, domain.Message{ChatID: chat.ID, UserID: input.UserID, Text: input.Text, CreatedAt: time.Now()})
 
-	if err := u.postgres.UpdateChat(ctx, chat); err != nil {
+	if err := u.p.UpdateChat(ctx, chat); err != nil {
 		return dto.SendMessageOutput{}, fmt.Errorf("chat update error: %w", err)
 	}
 

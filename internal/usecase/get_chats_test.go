@@ -7,6 +7,7 @@ import (
 	"messenger/internal/domain"
 	"messenger/internal/dto"
 
+	"messenger/pkg/jwt"
 	sliceoperations "messenger/pkg/slice_operations"
 	"testing"
 )
@@ -36,7 +37,7 @@ func TestGetChats(t *testing.T) {
 			fp.Users = test.Users
 			fp.Chats = test.Chats
 
-			uc := NewUsecase(fp)
+			uc := NewUsecase(fp, jwt.NewJWT())
 
 			output, err := uc.GetChats(context.TODO(), test.Input)
 

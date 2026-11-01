@@ -23,11 +23,13 @@ func main() {
 		os.Exit(1)
 	}
 
-	uc := usecase.NewUsecase(p)
+	j := jwt.NewJWT()
+
+	uc := usecase.NewUsecase(p, j)
 
 	hc := http.NewHTTPController(uc)
 
-	hc.UseMiddleware(jwt.IdentifyMiddleware)
+	hc.UseMiddleware(j.IdentifyMiddleware)
 	hc.DefindEndpoints()
 
 	hc.ListenAndServe("localhost:8088")

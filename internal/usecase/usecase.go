@@ -18,7 +18,7 @@ type UsecaseInterface interface {
 	// Login implements the login endpoint on the business layer.
 	// The method receives dto.LoginInput and context.Context and returns dto.LoginOutput and error.
 	// It chceks if password is correct and returns user's ID and JWT-Token pair.
-	// If password if incorrect, method returns domain.ErrIncorrectPassword.
+	// If password if incorrect, method returns domain.ErrUnauthorized.
 	Login(ctx context.Context, input dto.LoginInput) (dto.LoginOutput, error)
 
 	// LoginByRefreshToken implements the login_by_refresh_token endpoint on the business layer.
@@ -71,20 +71,27 @@ type UsecaseInterface interface {
 	GetMessages(ctx context.Context, input dto.GetMessagesInput) (dto.GetMessagesOutput, error)
 }
 
+type TokenIssuer interface {
+	GenerateTokenPair(id int, username string) (accesToken string, refreshToken string, err error)
+	ParseAccesToken(accesToken string) (id int, username string, err error)
+	ParseRefreshToken(refreshToken string) (id int, err error)
+}
+
 // Usecase is a default implementation of the UsecaseInterface.
 type Usecase struct {
-	postgres postgres.PostgresInterface
+	p  postgres.PostgresInterface
+	ti TokenIssuer
 }
 
 // NewUscase initializes Usecase and returns pointer on it.
-func NewUsecase(postgres postgres.PostgresInterface) *Usecase {
-	return &Usecase{postgres: postgres}
+func NewUsecase(p postgres.PostgresInterface, ti TokenIssuer) *Usecase {
+	return &Usecase{p: p, ti: ti}
 }
 
 // isUserInChat is a privet Usecase method that checks if the user is in the chat.
 // It returns (true, nil) if the user is in the chat, (false, nil) if the user is not in the chat and (false, err) if an error appeared while execution.
 func (u *Usecase) isUserInChat(ctx context.Context, userID int, chatID int) (ok bool, err error) {
-	chat, err := u.postgres.GetChatByID(ctx, chatID)
+	chat, err := u.p.GetChatByID(ctx, chatID)
 	if err != nil {
 		return false, fmt.Errorf("chat getting error: %w", err)
 	}

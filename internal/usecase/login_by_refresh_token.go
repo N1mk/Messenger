@@ -6,7 +6,6 @@ import (
 	"fmt"
 	"messenger/internal/domain"
 	"messenger/internal/dto"
-	"messenger/pkg/jwt"
 )
 
 // LoginByRefreshToken implements the login_by_refresh_token endpoint on the business layer.
@@ -14,21 +13,21 @@ import (
 // It chceks if refresh token exists and valid and returns user's ID and JWT-Token pair.
 // If refresh token is not exist, method returns domain.ErrUnauthorized.
 func (u *Usecase) LoginByRefreshToken(ctx context.Context, input dto.LoginByRefreshTokenInput) (dto.LoginByRefreshTokenOutput, error) {
-	user, err := u.postgres.GetUserByID(ctx, input.UserID)
+	user, err := u.p.GetUserByID(ctx, input.UserID)
 	if err != nil {
 		return dto.LoginByRefreshTokenOutput{}, fmt.Errorf("user get error: %w", err)
 	}
 
 	refreshTokenHash := sha256.Sum256([]byte(input.RefreshToken))
 
-	if ok, err := u.postgres.RefreshTokenExists(ctx, refreshTokenHash[:]); !ok {
+	if ok, err := u.p.RefreshTokenExists(ctx, refreshTokenHash[:]); !ok {
 		if err != nil {
 			return dto.LoginByRefreshTokenOutput{}, fmt.Errorf("refresh token exist check error: %w", err)
 		}
 		return dto.LoginByRefreshTokenOutput{}, fmt.Errorf("refresh token doesn't exist: %w", domain.ErrUnauthorized)
 	}
 
-	userID, err := jwt.ParseRefreshToken(input.RefreshToken)
+	userID, err := u.ti.ParseRefreshToken(input.RefreshToken)
 	if err != nil {
 		return dto.LoginByRefreshTokenOutput{}, fmt.Errorf("refresh token parsing error: %w", err)
 	}
@@ -37,16 +36,16 @@ func (u *Usecase) LoginByRefreshToken(ctx context.Context, input dto.LoginByRefr
 		return dto.LoginByRefreshTokenOutput{}, fmt.Errorf("refresh token user id and request user id don't match: %s", domain.ErrUnauthorized)
 	}
 
-	tokenPair, err := jwt.GenerateTokenPair(user.ID, user.Username)
+	accesToken, refreshToken, err := u.ti.GenerateTokenPair(user.ID, user.Username)
 	if err != nil {
 		return dto.LoginByRefreshTokenOutput{}, fmt.Errorf("jwt-token pair generation error: %w", err)
 	}
 
-	newRefreshTokenHash := sha256.Sum256([]byte(tokenPair.RefreshToken))
+	newRefreshTokenHash := sha256.Sum256([]byte(refreshToken))
 
-	if err := u.postgres.ReplaceRefreshToken(ctx, newRefreshTokenHash[:], input.UserID); err != nil {
+	if err := u.p.ReplaceRefreshToken(ctx, newRefreshTokenHash[:], input.UserID); err != nil {
 		return dto.LoginByRefreshTokenOutput{}, fmt.Errorf("refresh token replacing error: %w", err)
 	}
 
-	return dto.LoginByRefreshTokenOutput{ID: user.ID, TokenPair: tokenPair}, nil
+	return dto.LoginByRefreshTokenOutput{ID: user.ID, AccesToken: accesToken, RefreshToken: refreshToken}, nil
 }
