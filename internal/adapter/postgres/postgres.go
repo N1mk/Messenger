@@ -5,6 +5,7 @@ import (
 	"context"
 	"fmt"
 	"messenger/internal/domain"
+	"messenger/migrations"
 	"os"
 
 	"gorm.io/driver/postgres"
@@ -70,16 +71,23 @@ func NewPostgres(dsn string) (*Postgres, error) {
 	if dsn == "" {
 		dsn = os.Getenv("DEFAULT_DSN")
 		if dsn == "" {
-			return nil, fmt.Errorf("no default dsn in env variables")
+			return nil, fmt.Errorf("default dsn not found in env variables")
 		}
 	}
 
 	db, err := gorm.Open(postgres.Open(dsn), &gorm.Config{TranslateError: true})
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("db opening error: %w", err)
 	}
 
-	db.AutoMigrate(&domain.User{}, &domain.Chat{}, &domain.Message{}, &RefreshToken{})
+	sqlDB, err := db.DB()
+	if err != nil {
+		return nil, fmt.Errorf("sql.DB getting error: %w", err)
+	}
+
+	if err := migrations.RunMigrations(sqlDB); err != nil {
+		return nil, fmt.Errorf("migrations running error: %w", err)
+	}
 
 	return &Postgres{db: db}, nil
 }

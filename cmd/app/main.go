@@ -13,13 +13,13 @@ import (
 
 func main() {
 	if err := godotenv.Load("secret.env"); err != nil {
-		fmt.Printf("FATAL ERROR: env variables loading error: %s", err.Error())
+		fmt.Printf("FATAL ERROR: env variables loading error: %s\n", err.Error())
 		os.Exit(1)
 	}
 
 	p, err := postgres.NewPostgres("")
 	if err != nil {
-		fmt.Printf("FATAL ERROR: postgres initialization error: %s", err.Error())
+		fmt.Printf("FATAL ERROR: postgres initialization error: %s\n", err.Error())
 		os.Exit(1)
 	}
 

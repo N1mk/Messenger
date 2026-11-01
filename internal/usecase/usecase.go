@@ -71,6 +71,7 @@ type UsecaseInterface interface {
 	GetMessages(ctx context.Context, input dto.GetMessagesInput) (dto.GetMessagesOutput, error)
 }
 
+// TokenIssuer is a interface which defines work with JWT tokens
 type TokenIssuer interface {
 	GenerateTokenPair(id int, username string) (accesToken string, refreshToken string, err error)
 	ParseAccesToken(accesToken string) (id int, username string, err error)
