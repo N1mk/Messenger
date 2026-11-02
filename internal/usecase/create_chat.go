@@ -16,16 +16,21 @@ func (u *Usecase) CreateChat(ctx context.Context, input dto.CreateChatInput) (dt
 		return dto.CreateChatOutput{}, fmt.Errorf("user getting error: %w", err)
 	}
 
-	chat, err := u.p.CreateChat(ctx, domain.Chat{Name: input.Name, OwnerID: input.UserID})
-	if err != nil {
-		return dto.CreateChatOutput{}, fmt.Errorf("chat creation error: %w", err)
+	users := make([]domain.User, len(input.Usernames)+1)
+	users[0] = *creator
+
+	for i, username := range input.Usernames {
+		user, err := u.p.GetUserByName(ctx, username)
+		if err != nil {
+			return dto.CreateChatOutput{}, fmt.Errorf("user getting error: %w", err)
+		}
+
+		users[i+1] = *user
 	}
 
-	creator.Chats = []domain.Chat{*chat}
-
-	err = u.p.UpdateUser(ctx, creator)
+	chat, err := u.p.CreateChat(ctx, domain.Chat{Name: input.Name, OwnerID: input.UserID, Users: users})
 	if err != nil {
-		return dto.CreateChatOutput{}, fmt.Errorf("user update error: %w", err)
+		return dto.CreateChatOutput{}, fmt.Errorf("chat creation error: %w", err)
 	}
 
 	return dto.CreateChatOutput{ChatID: chat.ID}, nil
