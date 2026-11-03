@@ -14,8 +14,17 @@ import (
 // The method receives dto.LoginInput and returns dto.LoginOutput and error.
 // It chceks if password is correct and returns user's ID and JWT-Token pair.
 // If password if incorrect, method returns domain.ErrUnauthorized.
-func (u *Usecase) Login(ctx context.Context, input dto.LoginInput) (dto.LoginOutput, error) {
-	user, err := u.p.GetUserByID(ctx, input.UserID)
+func (u *Usecase) Login(ctx context.Context, input dto.LoginInput) (output dto.LoginOutput, err error) {
+	u.p.Begin(ctx)
+	defer func() {
+		if err != nil {
+			u.p.Rollback()
+			return
+		}
+		u.p.Commit()
+	}()
+
+	user, err := u.p.GetUserByID(input.UserID)
 	if err != nil {
 		return dto.LoginOutput{}, fmt.Errorf("user get error: %w", err)
 	}
@@ -30,7 +39,7 @@ func (u *Usecase) Login(ctx context.Context, input dto.LoginInput) (dto.LoginOut
 	}
 
 	refreshTokenHash := sha256.Sum256([]byte(refreshToken))
-	if err := u.p.ReplaceRefreshToken(ctx, refreshTokenHash[:], input.UserID); err != nil {
+	if err := u.p.ReplaceRefreshToken(refreshTokenHash[:], input.UserID); err != nil {
 		return dto.LoginOutput{}, fmt.Errorf("refresh token replacing error: %w", err)
 	}
 

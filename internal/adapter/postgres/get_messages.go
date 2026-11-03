@@ -1,7 +1,6 @@
 package postgres
 
 import (
-	"context"
 	"errors"
 	"messenger/internal/domain"
 
@@ -9,10 +8,10 @@ import (
 )
 
 // GetMessages selects all messages from the messages table with correct chat id.
-func (p *Postgres) GetMessages(ctx context.Context, chatID int) ([]*domain.Message, error) {
+func (p *Postgres) GetMessages(chatID int) ([]*domain.Message, error) {
 	var messages []domain.Message
 
-	err := p.db.WithContext(ctx).Raw("SELECT * FROM messages WHERE chat_id = ?", int(chatID)).Scan(&messages).Error
+	err := p.db.Raw("SELECT * FROM messages WHERE chat_id = ?", int(chatID)).Scan(&messages).Error
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			return nil, domain.ErrNotFound

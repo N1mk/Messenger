@@ -12,22 +12,31 @@ import (
 // The method receives dto.SendMessageInput and returns dto.SendMessageOutput and error.
 // It creates new message in chat with ID = input.ChatID.
 // If the uesr is not membered in the chat, method returns dto.ErrUserIsNotInChat.
-func (u *Usecase) SendMessage(ctx context.Context, input dto.SendMessageInput) (dto.SendMessageOutput, error) {
-	if ok, err := u.isUserInChat(ctx, input.UserID, input.ChatID); !ok {
+func (u *Usecase) SendMessage(ctx context.Context, input dto.SendMessageInput) (output dto.SendMessageOutput, err error) {
+	u.p.Begin(ctx)
+	defer func() {
+		if err != nil {
+			u.p.Rollback()
+			return
+		}
+		u.p.Commit()
+	}()
+
+	if ok, err := u.isUserInChat(input.UserID, input.ChatID); !ok {
 		if err != nil {
 			return dto.SendMessageOutput{}, fmt.Errorf("user check error: %w", err)
 		}
 		return dto.SendMessageOutput{}, domain.ErrUserIsNotInChat
 	}
 
-	chat, err := u.p.GetChatByID(ctx, input.ChatID)
+	chat, err := u.p.GetChatByID(input.ChatID)
 	if err != nil {
 		return dto.SendMessageOutput{}, fmt.Errorf("chat getting error: %w", err)
 	}
 
 	chat.Messages = append(chat.Messages, domain.Message{ChatID: chat.ID, UserID: input.UserID, Text: input.Text, CreatedAt: time.Now()})
 
-	if err := u.p.UpdateChat(ctx, chat); err != nil {
+	if err := u.p.UpdateChat(chat); err != nil {
 		return dto.SendMessageOutput{}, fmt.Errorf("chat update error: %w", err)
 	}
 

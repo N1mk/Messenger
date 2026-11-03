@@ -10,8 +10,17 @@ import (
 // UpdateChat implements the update_chat endpoint on the business layer.
 // The method receives dto.UpdateChatInput and returns dto.UpdateChatOutput and error.
 // It updates chat with same id as in input.
-func (u *Usecase) UpdateChat(ctx context.Context, input dto.UpdateChatInput) (dto.UpdateChatOutput, error) {
-	chat, err := u.p.GetChatByID(ctx, input.ChatID)
+func (u *Usecase) UpdateChat(ctx context.Context, input dto.UpdateChatInput) (output dto.UpdateChatOutput, err error) {
+	u.p.Begin(ctx)
+	defer func() {
+		if err != nil {
+			u.p.Rollback()
+			return
+		}
+		u.p.Commit()
+	}()
+
+	chat, err := u.p.GetChatByID(input.ChatID)
 	if err != nil {
 		return dto.UpdateChatOutput{}, fmt.Errorf("chat getting error: %w", err)
 	}
@@ -22,7 +31,7 @@ func (u *Usecase) UpdateChat(ctx context.Context, input dto.UpdateChatInput) (dt
 
 	users := make([]domain.User, len(input.Usernames))
 	for i, username := range input.Usernames {
-		user, err := u.p.GetUserByName(ctx, username)
+		user, err := u.p.GetUserByName(username)
 		if err != nil {
 			return dto.UpdateChatOutput{}, fmt.Errorf("user getting error: %w", err)
 		}
@@ -30,7 +39,7 @@ func (u *Usecase) UpdateChat(ctx context.Context, input dto.UpdateChatInput) (dt
 		users[i] = *user
 	}
 
-	if err := u.p.UpdateChat(ctx, &domain.Chat{ID: input.ChatID, OwnerID: input.OwnerID, Name: input.Name, Users: users}); err != nil {
+	if err := u.p.UpdateChat(&domain.Chat{ID: input.ChatID, OwnerID: input.OwnerID, Name: input.Name, Users: users}); err != nil {
 		return dto.UpdateChatOutput{}, fmt.Errorf("chat updating error: %w", err)
 	}
 

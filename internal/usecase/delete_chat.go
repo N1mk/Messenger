@@ -11,15 +11,24 @@ import (
 // The method receives dto.DeleteChatInput and returns dto.DeleteChatOutput and error.
 // It deletes chat by id.
 // If uesr is not membered in the chat, method returns dto.ErrUserIsNotInChat.
-func (u *Usecase) DeleteChat(ctx context.Context, input dto.DeleteChatInput) (dto.DeleteChatOutput, error) {
-	if ok, err := u.isUserInChat(ctx, input.UserID, input.ChatID); !ok {
+func (u *Usecase) DeleteChat(ctx context.Context, input dto.DeleteChatInput) (output dto.DeleteChatOutput, err error) {
+	u.p.Begin(ctx)
+	defer func() {
+		if err != nil {
+			u.p.Rollback()
+			return
+		}
+		u.p.Commit()
+	}()
+
+	if ok, err := u.isUserInChat(input.UserID, input.ChatID); !ok {
 		if err != nil {
 			return dto.DeleteChatOutput{}, fmt.Errorf("user check error: %w", err)
 		}
 		return dto.DeleteChatOutput{}, domain.ErrUserIsNotInChat
 	}
 
-	if err := u.p.RemoveChat(ctx, input.ChatID); err != nil {
+	if err := u.p.RemoveChat(input.ChatID); err != nil {
 		return dto.DeleteChatOutput{}, fmt.Errorf("chat removing error: %w", err)
 	}
 

@@ -12,15 +12,24 @@ import (
 // The method receives dto.LoginByRefreshTokenInput and returns dto.LoginByRefreshTokenOutput and error.
 // It chceks if refresh token exists and valid and returns user's ID and JWT-Token pair.
 // If refresh token is not exist, method returns domain.ErrUnauthorized.
-func (u *Usecase) LoginByRefreshToken(ctx context.Context, input dto.LoginByRefreshTokenInput) (dto.LoginByRefreshTokenOutput, error) {
-	user, err := u.p.GetUserByID(ctx, input.UserID)
+func (u *Usecase) LoginByRefreshToken(ctx context.Context, input dto.LoginByRefreshTokenInput) (output dto.LoginByRefreshTokenOutput, err error) {
+	u.p.Begin(ctx)
+	defer func() {
+		if err != nil {
+			u.p.Rollback()
+			return
+		}
+		u.p.Commit()
+	}()
+
+	user, err := u.p.GetUserByID(input.UserID)
 	if err != nil {
 		return dto.LoginByRefreshTokenOutput{}, fmt.Errorf("user get error: %w", err)
 	}
 
 	refreshTokenHash := sha256.Sum256([]byte(input.RefreshToken))
 
-	if ok, err := u.p.RefreshTokenExists(ctx, refreshTokenHash[:]); !ok {
+	if ok, err := u.p.RefreshTokenExists(refreshTokenHash[:]); !ok {
 		if err != nil {
 			return dto.LoginByRefreshTokenOutput{}, fmt.Errorf("refresh token exist check error: %w", err)
 		}
@@ -43,7 +52,7 @@ func (u *Usecase) LoginByRefreshToken(ctx context.Context, input dto.LoginByRefr
 
 	newRefreshTokenHash := sha256.Sum256([]byte(refreshToken))
 
-	if err := u.p.ReplaceRefreshToken(ctx, newRefreshTokenHash[:], input.UserID); err != nil {
+	if err := u.p.ReplaceRefreshToken(newRefreshTokenHash[:], input.UserID); err != nil {
 		return dto.LoginByRefreshTokenOutput{}, fmt.Errorf("refresh token replacing error: %w", err)
 	}
 

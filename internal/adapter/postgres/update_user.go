@@ -1,7 +1,6 @@
 package postgres
 
 import (
-	"context"
 	"errors"
 	"fmt"
 	"messenger/internal/domain"
@@ -10,8 +9,8 @@ import (
 )
 
 // UpdateUser updates user with correct id.
-func (p *Postgres) UpdateUser(ctx context.Context, user *domain.User) error {
-	if err := p.db.WithContext(ctx).Updates(&user).Error; err != nil {
+func (p *Postgres) UpdateUser(user *domain.User) error {
+	if err := p.db.Updates(&user).Error; err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			return fmt.Errorf("user updating error: %w", domain.ErrNotFound)
 		}

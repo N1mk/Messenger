@@ -10,8 +10,17 @@ import (
 // GetChats implements the get_chats endpoint on the business layer.
 // The method receives dto.GetChatsInput and returns dto.GetChatsOutput and error.
 // It returns all chats, in which the user is membered.
-func (u *Usecase) GetChats(ctx context.Context, input dto.GetChatsInput) (dto.GetChatsOutput, error) {
-	user, err := u.p.GetUserByID(ctx, input.UserID)
+func (u *Usecase) GetChats(ctx context.Context, input dto.GetChatsInput) (output dto.GetChatsOutput, err error) {
+	u.p.Begin(ctx)
+	defer func() {
+		if err != nil {
+			u.p.Rollback()
+			return
+		}
+		u.p.Commit()
+	}()
+
+	user, err := u.p.GetUserByID(input.UserID)
 	if err != nil {
 		return dto.GetChatsOutput{}, fmt.Errorf("user getting error: %w", err)
 	}
