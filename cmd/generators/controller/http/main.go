@@ -98,22 +98,27 @@ type configStruct struct {
 }
 
 type httpStruct struct {
-	Endpoints []Endpoint `json:"endpoints"`
+	Endpoints []endpoint `json:"endpoints"`
 }
 
-type Endpoint struct {
+type endpoint struct {
 	Name       string `json:"name"`
 	HTTPMethod string `json:"httpMethod"`
 	Endpoint   string `json:"endpoint"`
 }
 
 type endpointStruct struct {
-	Name          string       `json:"name"`
-	RequestFields []string     `json:"requestFields"`
-	IdentCheck    bool         `json:"identCheck"`
-	ContextValues []string     `json:"contextValues"`
-	URLParams     []string     `json:"urlParams"`
-	ErrorsToCheck []errToCheck `json:"errorsToCheck"`
+	Name          string         `json:"name"`
+	RequestFields []string       `json:"requestFields"`
+	IdentCheck    bool           `json:"identCheck"`
+	ContextValues []contextValue `json:"contextValues"`
+	URLParams     []string       `json:"urlParams"`
+	ErrorsToCheck []errToCheck   `json:"errorsToCheck"`
+}
+
+type contextValue struct {
+	Value string `json:"value"`
+	Type  string `json:"type"`
 }
 
 type errToCheck struct {
@@ -218,9 +223,9 @@ func generateEndpointFiles(endpoints []endpointStruct, t *template.Template, pac
 		}
 
 		for _, contextValue := range endpoint.ContextValues {
-			contextValuesGetting += fmt.Sprintf("%s := r.Context().Value(\"%s\").(int)\n", stringoperations.SpaceSplittedToLowerCamelCase(contextValue), stringoperations.SpaceSplittedToUnderscoreSplitted(contextValue)) // Здесь не должно быть явного указания ".(int)"
+			contextValuesGetting += fmt.Sprintf("%s := r.Context().Value(\"%s\").(%s)\n", stringoperations.SpaceSplittedToLowerCamelCase(contextValue.Value), stringoperations.SpaceSplittedToUnderscoreSplitted(contextValue.Value), contextValue.Type)
 
-			inputFieldPairs += fmt.Sprintf("%s: %s, ", stringoperations.SpaceSplittedToUpperCamelCase(contextValue), stringoperations.SpaceSplittedToLowerCamelCase(contextValue))
+			inputFieldPairs += fmt.Sprintf("%s: %s, ", stringoperations.SpaceSplittedToUpperCamelCase(contextValue.Value), stringoperations.SpaceSplittedToLowerCamelCase(contextValue.Value))
 		}
 
 		if contextValuesGetting != "" {

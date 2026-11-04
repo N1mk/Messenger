@@ -110,7 +110,10 @@
             "requestFields": [],
             "identCheck": true,
             "contextValues": [
-                "user ID"
+                {
+                    "value": "user ID",
+                    "type": "int"
+                }
             ],
             "urlParams": [],
             "errorsToCheck": [
@@ -126,7 +129,10 @@
             "requestFields": [],
             "identCheck": true,
             "contextValues": [
-                "user ID"
+                {
+                    "value": "user ID",
+                    "type": "int"
+                }
             ],
             "urlParams": [
                 "chat ID"
@@ -175,7 +181,10 @@
             ],
             "identCheck": true,
             "contextValues": [
-                "user ID"
+                {
+                    "value": "user ID",
+                    "type": "int"
+                }
             ],
             "urlParams": [],
             "errorsToCheck": [
@@ -193,7 +202,10 @@
             ],
             "identCheck": true,
             "contextValues": [
-                "user ID"
+                {
+                    "value": "user ID",
+                    "type": "int"
+                }
             ],
             "urlParams": [
                 "chat ID"
@@ -220,7 +232,10 @@
             ],
             "identCheck": true,
             "contextValues": [
-                "user ID"
+                {
+                    "value": "user ID",
+                    "type": "int"
+                }
             ],
             "urlParams": [
                 "chat ID"
@@ -242,7 +257,10 @@
             ],
             "identCheck": true,
             "contextValues": [
-                "user ID"
+                {
+                    "value": "user ID",
+                    "type": "int"
+                }
             ],
             "urlParams": [],
             "errorsToCheck": [
@@ -258,7 +276,10 @@
             "requestFields": [],
             "identCheck": true,
             "contextValues": [
-                "user ID"
+                {
+                    "value": "user ID",
+                    "type": "int"
+                }
             ],
             "urlParams": [
                 "chat ID"
@@ -281,7 +302,10 @@
             "requestFields": [],
             "identCheck": true,
             "contextValues": [
-                "user ID"
+                {
+                    "value": "user ID",
+                    "type": "int"
+                }
             ],
             "urlParams": [],
             "errorsToCheck": [
