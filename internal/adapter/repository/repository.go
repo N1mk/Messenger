@@ -1,5 +1,5 @@
 // Package postgres is an adapter for work with postgres databases.
-package postgres
+package repository
 
 import (
 	"context"

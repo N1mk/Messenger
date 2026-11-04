@@ -1,4 +1,4 @@
-package postgres
+package repository
 
 // RefreshTokenExists checks if refresh token exists in the refresh_tokens table.
 func (r *PostgresRepo) RefreshTokenExists(tokenHash []byte) (ok bool, err error) {

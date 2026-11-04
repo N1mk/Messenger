@@ -1,10 +1,10 @@
-package postgres
+package fakerepository
 
 import (
 	"messenger/internal/domain"
 )
 
-func (r *FakePostgresRepo) GetMessages(chatID int) ([]*domain.Message, error) {
+func (r *FakePostgresRepo) GetMessages(chatID int, _ int, _ int) ([]*domain.Message, error) {
 	messages := r.Chats[chatID].Messages
 
 	messagePointers := make([]*domain.Message, len(messages))

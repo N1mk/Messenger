@@ -126,7 +126,10 @@
         },
         {
             "name": "get messages",
-            "requestFields": [],
+            "requestFields": [
+                "LastMessageID int `json:\"last_message_id\"`",
+                "PageSize int `json:\"page_size\"`"   
+            ],
             "identCheck": true,
             "contextValues": [
                 {

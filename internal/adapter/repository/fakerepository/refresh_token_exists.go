@@ -1,4 +1,4 @@
-package postgres
+package fakerepository
 
 // Заглушка
 func (r *FakePostgresRepo) RefreshTokenExists(tokenHash []byte) (ok bool, err error) {

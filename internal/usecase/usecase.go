@@ -107,7 +107,7 @@ type Repo interface {
 	UpdateChat(chat *domain.Chat) error
 
 	// GetMessages selects all messages from the messages table with correct chat id.
-	GetMessages(chatID int) ([]*domain.Message, error)
+	GetMessages(chatID int, lastID int, pageSize int) ([]*domain.Message, error)
 
 	// RefreshTokenExists checks if refresh token exists in the refresh_tokens table.
 	RefreshTokenExists(tokenHash []byte) (ok bool, err error)

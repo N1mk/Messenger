@@ -1,4 +1,4 @@
-package postgres
+package fakerepository
 
 import (
 	"messenger/internal/domain"

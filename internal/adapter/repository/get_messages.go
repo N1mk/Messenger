@@ -1,4 +1,4 @@
-package postgres
+package repository
 
 import (
 	"errors"
@@ -8,10 +8,10 @@ import (
 )
 
 // GetMessages selects all messages from the messages table with correct chat id.
-func (r *PostgresRepo) GetMessages(chatID int) ([]*domain.Message, error) {
+func (r *PostgresRepo) GetMessages(chatID int, lastID int, pageSize int) ([]*domain.Message, error) {
 	var messages []domain.Message
 
-	err := r.db.Raw("SELECT * FROM messages WHERE chat_id = ?", int(chatID)).Scan(&messages).Error
+	err := r.db.Scopes(Paginate(lastID, pageSize)).Model(&domain.Message{}).Where("chat_id = ?", chatID).Select("*").Scan(&messages).Error
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			return nil, domain.ErrNotFound

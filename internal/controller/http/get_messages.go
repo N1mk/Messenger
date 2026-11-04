@@ -14,12 +14,28 @@ import (
 	"github.com/go-chi/chi"
 )
 
+// getMessagesRequest defines get_messages request structure
+type getMessagesRequest struct {
+	LastMessageID int `json:"last_message_id"`
+	PageSize      int `json:"page_size"`
+}
+
 // GetMessages implements the get_messages endpoint on the controller layer.
 // The method parses request structure and calls usecase.Usecase.GetMessages().
 func (c *HTTPController) GetMessages(w http.ResponseWriter, r *http.Request) {
 	isIdentified := r.Context().Value("is_identified").(bool)
 	if !isIdentified {
 		http.Error(w, "not identified", http.StatusUnauthorized)
+		return
+	}
+
+	var req getMessagesRequest
+
+	defer r.Body.Close()
+
+	err := json.NewDecoder(r.Body).Decode(&req)
+	if err != nil {
+		http.Error(w, fmt.Sprintf("decoding error: %s", err.Error()), http.StatusBadRequest)
 		return
 	}
 
@@ -31,7 +47,7 @@ func (c *HTTPController) GetMessages(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	var input dto.GetMessagesInput = dto.GetMessagesInput{UserID: userID, ChatID: chatID}
+	var input dto.GetMessagesInput = dto.GetMessagesInput{LastMessageID: req.LastMessageID, PageSize: req.PageSize, UserID: userID, ChatID: chatID}
 
 	if err := c.v.Struct(input); err != nil {
 		http.Error(w, fmt.Sprintf("validation error: %s", err.Error()), http.StatusBadRequest)

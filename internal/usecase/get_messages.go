@@ -28,7 +28,7 @@ func (u *Usecase) GetMessages(ctx context.Context, input dto.GetMessagesInput) (
 		return dto.GetMessagesOutput{}, domain.ErrUserIsNotInChat
 	}
 
-	messages, err := u.r.GetMessages(input.ChatID)
+	messages, err := u.r.GetMessages(input.ChatID, input.LastMessageID, input.PageSize)
 	if err != nil {
 		return dto.GetMessagesOutput{}, fmt.Errorf("messages getting error: %w", err)
 	}

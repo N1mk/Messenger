@@ -49,7 +49,9 @@
     "name": "get messages",
     "inputFields": [
       "UserID int `json:\"user_id\" validate:\"required\"`",
-      "ChatID int `json:\"chat_id\" validate:\"required\"`"
+      "ChatID int `json:\"chat_id\" validate:\"required\"`",
+      "LastMessageID int `json:\"last_message_id\"`",
+      "PageSize int `json:\"page_size\"`"
     ],
     "outputFields": [
       "Messages []*domain.Message `json:\"messages\" gorm:\"type:jsonb\"`"

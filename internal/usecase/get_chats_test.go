@@ -3,7 +3,7 @@ package usecase
 import (
 	"context"
 	"errors"
-	postgres "messenger/internal/adapter/repository/fake"
+	postgres "messenger/internal/adapter/repository/fakerepository"
 	"messenger/internal/domain"
 	"messenger/internal/dto"
 
