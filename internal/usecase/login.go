@@ -15,16 +15,16 @@ import (
 // It chceks if password is correct and returns user's ID and JWT-Token pair.
 // If password if incorrect, method returns domain.ErrUnauthorized.
 func (u *Usecase) Login(ctx context.Context, input dto.LoginInput) (output dto.LoginOutput, err error) {
-	u.p.Begin(ctx)
+	u.r.Begin(ctx)
 	defer func() {
 		if err != nil {
-			u.p.Rollback()
+			u.r.Rollback()
 			return
 		}
-		u.p.Commit()
+		u.r.Commit()
 	}()
 
-	user, err := u.p.GetUserByID(input.UserID)
+	user, err := u.r.GetUserByID(input.UserID)
 	if err != nil {
 		return dto.LoginOutput{}, fmt.Errorf("user get error: %w", err)
 	}
@@ -39,7 +39,7 @@ func (u *Usecase) Login(ctx context.Context, input dto.LoginInput) (output dto.L
 	}
 
 	refreshTokenHash := sha256.Sum256([]byte(refreshToken))
-	if err := u.p.ReplaceRefreshToken(refreshTokenHash[:], input.UserID); err != nil {
+	if err := u.r.ReplaceRefreshToken(refreshTokenHash[:], input.UserID); err != nil {
 		return dto.LoginOutput{}, fmt.Errorf("refresh token replacing error: %w", err)
 	}
 

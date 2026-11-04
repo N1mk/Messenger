@@ -85,7 +85,7 @@
         {
             "name": "login by refresh token",
             "requestFields": [
-                "RefreshToken string `json:\"refresh_token\"`"
+                "RefreshToken string `json:\"refresh_token\" validate:\"required\"`"
             ],
             "identCheck": false,
             "contextValues": [],

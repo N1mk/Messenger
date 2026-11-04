@@ -16,7 +16,7 @@ import (
 
 // loginByRefreshTokenRequest defines login_by_refresh_token request structure
 type loginByRefreshTokenRequest struct {
-	RefreshToken string `json:"refresh_token"`
+	RefreshToken string `json:"refresh_token" validate:"required"`
 }
 
 // LoginByRefreshToken implements the login_by_refresh_token endpoint on the controller layer.

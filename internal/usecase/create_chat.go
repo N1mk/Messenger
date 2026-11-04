@@ -11,16 +11,16 @@ import (
 // The method receives dto.CreateChatInput and returns dto.CreateChatOutput and error.
 // It creates new chat.
 func (u *Usecase) CreateChat(ctx context.Context, input dto.CreateChatInput) (output dto.CreateChatOutput, err error) {
-	u.p.Begin(ctx)
+	u.r.Begin(ctx)
 	defer func() {
 		if err != nil {
-			u.p.Rollback()
+			u.r.Rollback()
 			return
 		}
-		u.p.Commit()
+		u.r.Commit()
 	}()
 
-	creator, err := u.p.GetUserByID(input.UserID)
+	creator, err := u.r.GetUserByID(input.UserID)
 	if err != nil {
 		return dto.CreateChatOutput{}, fmt.Errorf("user getting error: %w", err)
 	}
@@ -29,7 +29,7 @@ func (u *Usecase) CreateChat(ctx context.Context, input dto.CreateChatInput) (ou
 	users[0] = *creator
 
 	for i, username := range input.Usernames {
-		user, err := u.p.GetUserByName(username)
+		user, err := u.r.GetUserByName(username)
 		if err != nil {
 			return dto.CreateChatOutput{}, fmt.Errorf("user getting error: %w", err)
 		}
@@ -37,7 +37,7 @@ func (u *Usecase) CreateChat(ctx context.Context, input dto.CreateChatInput) (ou
 		users[i+1] = *user
 	}
 
-	chat, err := u.p.CreateChat(domain.Chat{Name: input.Name, OwnerID: input.UserID, Users: users})
+	chat, err := u.r.CreateChat(domain.Chat{Name: input.Name, OwnerID: input.UserID, Users: users})
 	if err != nil {
 		return dto.CreateChatOutput{}, fmt.Errorf("chat creation error: %w", err)
 	}

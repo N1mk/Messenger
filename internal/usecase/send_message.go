@@ -13,13 +13,13 @@ import (
 // It creates new message in chat with ID = input.ChatID.
 // If the uesr is not membered in the chat, method returns dto.ErrUserIsNotInChat.
 func (u *Usecase) SendMessage(ctx context.Context, input dto.SendMessageInput) (output dto.SendMessageOutput, err error) {
-	u.p.Begin(ctx)
+	u.r.Begin(ctx)
 	defer func() {
 		if err != nil {
-			u.p.Rollback()
+			u.r.Rollback()
 			return
 		}
-		u.p.Commit()
+		u.r.Commit()
 	}()
 
 	if ok, err := u.isUserInChat(input.UserID, input.ChatID); !ok {
@@ -29,14 +29,14 @@ func (u *Usecase) SendMessage(ctx context.Context, input dto.SendMessageInput) (
 		return dto.SendMessageOutput{}, domain.ErrUserIsNotInChat
 	}
 
-	chat, err := u.p.GetChatByID(input.ChatID)
+	chat, err := u.r.GetChatByID(input.ChatID)
 	if err != nil {
 		return dto.SendMessageOutput{}, fmt.Errorf("chat getting error: %w", err)
 	}
 
 	chat.Messages = append(chat.Messages, domain.Message{ChatID: chat.ID, UserID: input.UserID, Text: input.Text, CreatedAt: time.Now()})
 
-	if err := u.p.UpdateChat(chat); err != nil {
+	if err := u.r.UpdateChat(chat); err != nil {
 		return dto.SendMessageOutput{}, fmt.Errorf("chat update error: %w", err)
 	}
 

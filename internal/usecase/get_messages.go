@@ -12,13 +12,13 @@ import (
 // It returns all messages from chat.
 // If the uesr is not membered in the chat, method returns dto.ErrUserIsNotInChat.
 func (u *Usecase) GetMessages(ctx context.Context, input dto.GetMessagesInput) (output dto.GetMessagesOutput, err error) {
-	u.p.Begin(ctx)
+	u.r.Begin(ctx)
 	defer func() {
 		if err != nil {
-			u.p.Rollback()
+			u.r.Rollback()
 			return
 		}
-		u.p.Commit()
+		u.r.Commit()
 	}()
 
 	if ok, err := u.isUserInChat(input.UserID, input.ChatID); !ok {
@@ -28,7 +28,7 @@ func (u *Usecase) GetMessages(ctx context.Context, input dto.GetMessagesInput) (
 		return dto.GetMessagesOutput{}, domain.ErrUserIsNotInChat
 	}
 
-	messages, err := u.p.GetMessages(input.ChatID)
+	messages, err := u.r.GetMessages(input.ChatID)
 	if err != nil {
 		return dto.GetMessagesOutput{}, fmt.Errorf("messages getting error: %w", err)
 	}

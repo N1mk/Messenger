@@ -13,23 +13,23 @@ import (
 // It chceks if refresh token exists and valid and returns user's ID and JWT-Token pair.
 // If refresh token is not exist, method returns domain.ErrUnauthorized.
 func (u *Usecase) LoginByRefreshToken(ctx context.Context, input dto.LoginByRefreshTokenInput) (output dto.LoginByRefreshTokenOutput, err error) {
-	u.p.Begin(ctx)
+	u.r.Begin(ctx)
 	defer func() {
 		if err != nil {
-			u.p.Rollback()
+			u.r.Rollback()
 			return
 		}
-		u.p.Commit()
+		u.r.Commit()
 	}()
 
-	user, err := u.p.GetUserByID(input.UserID)
+	user, err := u.r.GetUserByID(input.UserID)
 	if err != nil {
 		return dto.LoginByRefreshTokenOutput{}, fmt.Errorf("user get error: %w", err)
 	}
 
 	refreshTokenHash := sha256.Sum256([]byte(input.RefreshToken))
 
-	if ok, err := u.p.RefreshTokenExists(refreshTokenHash[:]); !ok {
+	if ok, err := u.r.RefreshTokenExists(refreshTokenHash[:]); !ok {
 		if err != nil {
 			return dto.LoginByRefreshTokenOutput{}, fmt.Errorf("refresh token exist check error: %w", err)
 		}
@@ -45,14 +45,14 @@ func (u *Usecase) LoginByRefreshToken(ctx context.Context, input dto.LoginByRefr
 		return dto.LoginByRefreshTokenOutput{}, fmt.Errorf("refresh token user id and request user id don't match: %s", domain.ErrUnauthorized)
 	}
 
-	accesToken, refreshToken, err := u.ti.GenerateTokenPair(user.ID, user.Username)
+	accesToken, refreshToken, err := u.ti.GenerateTokenPair(input.UserID, user.Username)
 	if err != nil {
 		return dto.LoginByRefreshTokenOutput{}, fmt.Errorf("jwt-token pair generation error: %w", err)
 	}
 
 	newRefreshTokenHash := sha256.Sum256([]byte(refreshToken))
 
-	if err := u.p.ReplaceRefreshToken(newRefreshTokenHash[:], input.UserID); err != nil {
+	if err := u.r.ReplaceRefreshToken(newRefreshTokenHash[:], input.UserID); err != nil {
 		return dto.LoginByRefreshTokenOutput{}, fmt.Errorf("refresh token replacing error: %w", err)
 	}
 

@@ -11,16 +11,16 @@ import (
 // The method receives dto.GetChatsInput and returns dto.GetChatsOutput and error.
 // It returns all chats, in which the user is membered.
 func (u *Usecase) GetChats(ctx context.Context, input dto.GetChatsInput) (output dto.GetChatsOutput, err error) {
-	u.p.Begin(ctx)
+	u.r.Begin(ctx)
 	defer func() {
 		if err != nil {
-			u.p.Rollback()
+			u.r.Rollback()
 			return
 		}
-		u.p.Commit()
+		u.r.Commit()
 	}()
 
-	user, err := u.p.GetUserByID(input.UserID)
+	user, err := u.r.GetUserByID(input.UserID)
 	if err != nil {
 		return dto.GetChatsOutput{}, fmt.Errorf("user getting error: %w", err)
 	}

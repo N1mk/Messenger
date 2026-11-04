@@ -4,7 +4,7 @@ package usecase
 import (
 	"context"
 	"fmt"
-	"messenger/internal/adapter/postgres"
+	"messenger/internal/domain"
 	"messenger/internal/dto"
 )
 
@@ -71,6 +71,57 @@ type UsecaseInterface interface {
 	GetMessages(ctx context.Context, input dto.GetMessagesInput) (dto.GetMessagesOutput, error)
 }
 
+// Repo defines all methods that usecase need from repo.
+type Repo interface {
+	// Begins transaction
+	Begin(ctx context.Context)
+	// Rollbacks transaction
+	Rollback()
+	// Commits transaction
+	Commit()
+	// GetUserByID selects user from the users table by id.
+	GetUserByID(id int) (*domain.User, error)
+
+	// GetUserByName selects user from the users table by name.
+	GetUserByName(username string) (*domain.User, error)
+
+	// СreateUser creates new element in the users table.
+	CreateUser(user domain.User) (*domain.User, error)
+
+	// RemoveUser removes user from the users table by id.
+	RemoveUser(id int) error
+
+	// UpdateUser updates user with correct id.
+	UpdateUser(user *domain.User) error
+
+	// GetChatByID selects chat from the chats table by id.
+	GetChatByID(id int) (*domain.Chat, error)
+
+	// СreateChat creates new element in the chats table.
+	CreateChat(chat domain.Chat) (*domain.Chat, error)
+
+	// RemoveChat removes chat from the chats table by id.
+	RemoveChat(id int) error
+
+	// UpdateChat updates chat with correct id.
+	UpdateChat(chat *domain.Chat) error
+
+	// GetMessages selects all messages from the messages table with correct chat id.
+	GetMessages(chatID int) ([]*domain.Message, error)
+
+	// RefreshTokenExists checks if refresh token exists in the refresh_tokens table.
+	RefreshTokenExists(tokenHash []byte) (ok bool, err error)
+
+	// СreateRefreshToken creates new element in the refresh_tokens table.
+	CreateRefreshToken(tokenHash []byte, userID int) error
+
+	// RemoveRefreshToken removes refresh token from refresh_tokens table.
+	RemoveRefreshToken(userID int) error
+
+	// ReplaceRefreshToken replaces the old user refresh token with the new one in transaction in the refresh_tokens table.
+	ReplaceRefreshToken(newtokenHash []byte, userID int) error
+}
+
 // TokenIssuer is a interface which defines work with JWT tokens
 type TokenIssuer interface {
 	GenerateTokenPair(id int, username string) (accesToken string, refreshToken string, err error)
@@ -80,19 +131,19 @@ type TokenIssuer interface {
 
 // Usecase is a default implementation of the UsecaseInterface.
 type Usecase struct {
-	p  postgres.PostgresInterface
+	r  Repo
 	ti TokenIssuer
 }
 
 // NewUscase initializes Usecase and returns pointer on it.
-func NewUsecase(p postgres.PostgresInterface, ti TokenIssuer) *Usecase {
-	return &Usecase{p: p, ti: ti}
+func NewUsecase(r Repo, ti TokenIssuer) *Usecase {
+	return &Usecase{r: r, ti: ti}
 }
 
 // isUserInChat is a privet Usecase method that checks if the user is in the chat.
 // It returns (true, nil) if the user is in the chat, (false, nil) if the user is not in the chat and (false, err) if an error appeared while execution.
 func (u *Usecase) isUserInChat(userID int, chatID int) (ok bool, err error) {
-	chat, err := u.p.GetChatByID(chatID)
+	chat, err := u.r.GetChatByID(chatID)
 	if err != nil {
 		return false, fmt.Errorf("chat getting error: %w", err)
 	}

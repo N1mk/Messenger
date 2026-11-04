@@ -14,13 +14,13 @@ import (
 // The method receives dto.SignupInput and returns dto.SignupOutput and error.
 // It creates new user from input and rutruns user's ID and JWT-Token pair.
 func (u *Usecase) Signup(ctx context.Context, input dto.SignupInput) (output dto.SignupOutput, err error) {
-	u.p.Begin(ctx)
+	u.r.Begin(ctx)
 	defer func() {
 		if err != nil {
-			u.p.Rollback()
+			u.r.Rollback()
 			return
 		}
-		u.p.Commit()
+		u.r.Commit()
 	}()
 
 	passwordHash, err := bcrypt.GenerateFromPassword([]byte(input.Password), bcrypt.DefaultCost)
@@ -30,7 +30,7 @@ func (u *Usecase) Signup(ctx context.Context, input dto.SignupInput) (output dto
 
 	user := domain.User{Username: input.Username, PasswordHash: passwordHash, Email: input.Email}
 
-	newUser, err := u.p.CreateUser(user)
+	newUser, err := u.r.CreateUser(user)
 	if err != nil {
 		return dto.SignupOutput{}, fmt.Errorf("user creation error: %w", err)
 	}
@@ -42,7 +42,7 @@ func (u *Usecase) Signup(ctx context.Context, input dto.SignupInput) (output dto
 
 	refreshTokenHash := sha256.Sum256([]byte(refreshToken))
 
-	if err := u.p.ReplaceRefreshToken(refreshTokenHash[:], newUser.ID); err != nil {
+	if err := u.r.ReplaceRefreshToken(refreshTokenHash[:], newUser.ID); err != nil {
 		return dto.SignupOutput{}, fmt.Errorf("refresh token replacing error: %w", err)
 	}
 

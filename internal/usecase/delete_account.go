@@ -10,22 +10,22 @@ import (
 // The method receives dto.DeleteAccountInput and returns dto.DeleteAccountOutput and error.
 // It deletes user by id.
 func (u *Usecase) DeleteAccount(ctx context.Context, input dto.DeleteAccountInput) (output dto.DeleteAccountOutput, err error) {
-	u.p.Begin(ctx)
+	u.r.Begin(ctx)
 	defer func() {
 		if err != nil {
-			u.p.Rollback()
+			u.r.Rollback()
 			return
 		}
-		u.p.Commit()
+		u.r.Commit()
 	}()
 
-	user, err := u.p.GetUserByID(input.UserID)
+	user, err := u.r.GetUserByID(input.UserID)
 	if err != nil {
 		return dto.DeleteAccountOutput{}, fmt.Errorf("user getting error: %w", err)
 	}
 
 	for _, chat := range user.Chats {
-		chatPointer, err := u.p.GetChatByID(chat.ID)
+		chatPointer, err := u.r.GetChatByID(chat.ID)
 		if err != nil {
 			return dto.DeleteAccountOutput{}, fmt.Errorf("chat getting error: %w", err)
 		}
@@ -39,7 +39,7 @@ func (u *Usecase) DeleteAccount(ctx context.Context, input dto.DeleteAccountInpu
 		}
 	}
 
-	if err := u.p.RemoveUser(input.UserID); err != nil {
+	if err := u.r.RemoveUser(input.UserID); err != nil {
 		return dto.DeleteAccountOutput{}, fmt.Errorf("user removing error: %w", err)
 	}
 

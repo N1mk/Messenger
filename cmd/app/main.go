@@ -2,7 +2,7 @@ package main
 
 import (
 	"fmt"
-	"messenger/internal/adapter/postgres"
+	postgres "messenger/internal/adapter/repository"
 	"messenger/internal/controller/http"
 	"messenger/internal/usecase"
 	"messenger/pkg/jwt"
@@ -17,7 +17,7 @@ func main() {
 		os.Exit(1)
 	}
 
-	p, err := postgres.NewPostgres("")
+	r, err := postgres.NewPostgres("")
 	if err != nil {
 		fmt.Printf("FATAL ERROR: postgres initialization error: %s\n", err.Error())
 		os.Exit(1)
@@ -25,7 +25,7 @@ func main() {
 
 	j := jwt.NewJWT()
 
-	uc := usecase.NewUsecase(p, j)
+	uc := usecase.NewUsecase(r, j)
 
 	hc := http.NewHTTPController(uc)
 
