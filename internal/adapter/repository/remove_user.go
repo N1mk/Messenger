@@ -13,32 +13,28 @@ func (r *PostgresRepo) RemoveUser(id int) error {
 	var chatsToRemove []domain.Chat
 
 	var user domain.User
-	if err := r.db.Preload("Chats").First(&user, id).Error; err != nil {
+	if err := r.db.Preload("Chats.Users").First(&user, id).Error; err != nil {
 		return fmt.Errorf("user getting error: %w", err)
 	}
 
 	for _, chat := range user.Chats {
-		var chatWithUsers domain.Chat
-		if err := r.db.Preload("Users").First(&chatWithUsers, chat.ID).Error; err != nil {
-			return fmt.Errorf("chat without users searching error: %w", err)
-		}
-
-		if len(chatWithUsers.Users) <= 1 {
-			chatsToRemove = append(chatsToRemove, chatWithUsers)
+		if len(chat.Users) <= 1 {
+			chatsToRemove = append(chatsToRemove, chat)
 			continue
 		}
-		if chatWithUsers.OwnerID == id {
+
+		if chat.OwnerID == id {
 			var newOwner domain.User
-			for _, member := range chatWithUsers.Users {
+			for _, member := range chat.Users {
 				if member.ID != user.ID {
 					newOwner = member
 					break
 				}
 			}
 
-			chatWithUsers.OwnerID = newOwner.ID
+			chat.OwnerID = newOwner.ID
 
-			if err := r.UpdateChat(&chatWithUsers); err != nil {
+			if err := r.UpdateChat(&chat); err != nil {
 				return fmt.Errorf("chat owner changing error: %w", err)
 			}
 		}

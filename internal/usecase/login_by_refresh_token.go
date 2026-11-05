@@ -24,35 +24,42 @@ func (u *Usecase) LoginByRefreshToken(ctx context.Context, input dto.LoginByRefr
 
 	user, err := u.r.GetUserByID(input.UserID)
 	if err != nil {
-		return dto.LoginByRefreshTokenOutput{}, fmt.Errorf("user get error: %w", err)
+		u.l.LogError(fmt.Sprintf("user getting error: %s", err.Error()))
+		return dto.LoginByRefreshTokenOutput{}, fmt.Errorf("user getting error: %w", err)
 	}
 
 	refreshTokenHash := sha256.Sum256([]byte(input.RefreshToken))
 
 	if ok, err := u.r.RefreshTokenExists(refreshTokenHash[:]); !ok {
 		if err != nil {
+			u.l.LogError(fmt.Sprintf("refresh token exsist check error error: %s", err.Error()))
 			return dto.LoginByRefreshTokenOutput{}, fmt.Errorf("refresh token exist check error: %w", err)
 		}
+		u.l.LogError(fmt.Sprintf("refresh token doesn't exist: %s", domain.ErrUnauthorized.Error()))
 		return dto.LoginByRefreshTokenOutput{}, fmt.Errorf("refresh token doesn't exist: %w", domain.ErrUnauthorized)
 	}
 
 	userID, err := u.ti.ParseRefreshToken(input.RefreshToken)
 	if err != nil {
+		u.l.LogError(fmt.Sprintf("refresh token parsing error: %s", err.Error()))
 		return dto.LoginByRefreshTokenOutput{}, fmt.Errorf("refresh token parsing error: %w", err)
 	}
 
 	if input.UserID != userID {
+		u.l.LogError(fmt.Sprintf("refresh token user id and request user id don't match: %s", domain.ErrUnauthorized.Error()))
 		return dto.LoginByRefreshTokenOutput{}, fmt.Errorf("refresh token user id and request user id don't match: %s", domain.ErrUnauthorized)
 	}
 
 	accesToken, refreshToken, err := u.ti.GenerateTokenPair(input.UserID, user.Username)
 	if err != nil {
+		u.l.LogError(fmt.Sprintf("jwt-token pair getting error: %s", err.Error()))
 		return dto.LoginByRefreshTokenOutput{}, fmt.Errorf("jwt-token pair generation error: %w", err)
 	}
 
 	newRefreshTokenHash := sha256.Sum256([]byte(refreshToken))
 
 	if err := u.r.ReplaceRefreshToken(newRefreshTokenHash[:], input.UserID); err != nil {
+		u.l.LogError(fmt.Sprintf("refresh token replacing error: %s", err.Error()))
 		return dto.LoginByRefreshTokenOutput{}, fmt.Errorf("refresh token replacing error: %w", err)
 	}
 

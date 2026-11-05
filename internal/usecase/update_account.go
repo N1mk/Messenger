@@ -24,10 +24,12 @@ func (u *Usecase) UpdateAccount(ctx context.Context, input dto.UpdateAccountInpu
 
 	passwordHash, err := bcrypt.GenerateFromPassword([]byte(input.Password), bcrypt.DefaultCost)
 	if err != nil {
+		u.l.LogError(fmt.Sprintf("password hash generation error: %s", err.Error()))
 		return dto.UpdateAccountOutput{}, fmt.Errorf("password hash generation error: %w", err)
 	}
 
 	if err := u.r.UpdateUser(&domain.User{ID: input.UserID, Username: input.Username, Email: input.Email, PasswordHash: passwordHash}); err != nil {
+		u.l.LogError(fmt.Sprintf("user updating error: %s", err.Error()))
 		return dto.UpdateAccountOutput{}, fmt.Errorf("user updating error: %w", err)
 	}
 

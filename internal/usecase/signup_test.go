@@ -7,6 +7,7 @@ import (
 	"messenger/internal/domain"
 	"messenger/internal/dto"
 	"messenger/pkg/jwt"
+	"messenger/pkg/logger"
 	"testing"
 )
 
@@ -32,7 +33,7 @@ func TestSignup(t *testing.T) {
 			fp := postgres.NewFakePostgres()
 			fp.Users = test.Users
 
-			uc := NewUsecase(fp, jwt.NewJWT())
+			uc := NewUsecase(fp, &logger.Logger{}, jwt.NewJWT())
 
 			_, err := uc.Signup(context.TODO(), test.Input)
 

@@ -21,12 +21,14 @@ func (u *Usecase) DeleteAccount(ctx context.Context, input dto.DeleteAccountInpu
 
 	user, err := u.r.GetUserByID(input.UserID)
 	if err != nil {
+		u.l.LogError(fmt.Sprintf("user getting error: %s", err.Error()))
 		return dto.DeleteAccountOutput{}, fmt.Errorf("user getting error: %w", err)
 	}
 
 	for _, chat := range user.Chats {
 		chatPointer, err := u.r.GetChatByID(chat.ID)
 		if err != nil {
+			u.l.LogError(fmt.Sprintf("chat getting error: %s", err.Error()))
 			return dto.DeleteAccountOutput{}, fmt.Errorf("chat getting error: %w", err)
 		}
 
@@ -40,6 +42,7 @@ func (u *Usecase) DeleteAccount(ctx context.Context, input dto.DeleteAccountInpu
 	}
 
 	if err := u.r.RemoveUser(input.UserID); err != nil {
+		u.l.LogError(fmt.Sprintf("user removing error: %s", err.Error()))
 		return dto.DeleteAccountOutput{}, fmt.Errorf("user removing error: %w", err)
 	}
 

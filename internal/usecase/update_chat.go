@@ -22,6 +22,7 @@ func (u *Usecase) UpdateChat(ctx context.Context, input dto.UpdateChatInput) (ou
 
 	chat, err := u.r.GetChatByID(input.ChatID)
 	if err != nil {
+		u.l.LogError(fmt.Sprintf("chat getting error: %s", err.Error()))
 		return dto.UpdateChatOutput{}, fmt.Errorf("chat getting error: %w", err)
 	}
 
@@ -33,6 +34,7 @@ func (u *Usecase) UpdateChat(ctx context.Context, input dto.UpdateChatInput) (ou
 	for i, username := range input.Usernames {
 		user, err := u.r.GetUserByName(username)
 		if err != nil {
+			u.l.LogError(fmt.Sprintf("user getting error: %s", err.Error()))
 			return dto.UpdateChatOutput{}, fmt.Errorf("user getting error: %w", err)
 		}
 
@@ -40,6 +42,7 @@ func (u *Usecase) UpdateChat(ctx context.Context, input dto.UpdateChatInput) (ou
 	}
 
 	if err := u.r.UpdateChat(&domain.Chat{ID: input.ChatID, OwnerID: input.OwnerID, Name: input.Name, Users: users}); err != nil {
+		u.l.LogError(fmt.Sprintf("chat updating error: %s", err.Error()))
 		return dto.UpdateChatOutput{}, fmt.Errorf("chat updating error: %w", err)
 	}
 

@@ -23,13 +23,15 @@ func (u *Usecase) GetMessages(ctx context.Context, input dto.GetMessagesInput) (
 
 	if ok, err := u.isUserInChat(input.UserID, input.ChatID); !ok {
 		if err != nil {
-			return dto.GetMessagesOutput{}, fmt.Errorf("user check error: %w", err)
+			u.l.LogError(fmt.Sprintf("user membership check error: %s", err.Error()))
+			return dto.GetMessagesOutput{}, fmt.Errorf("user membership check error: %w", err)
 		}
 		return dto.GetMessagesOutput{}, domain.ErrUserIsNotInChat
 	}
 
 	messages, err := u.r.GetMessages(input.ChatID, input.LastMessageID, input.PageSize)
 	if err != nil {
+		u.l.LogError(fmt.Sprintf("message getting error: %s", err.Error()))
 		return dto.GetMessagesOutput{}, fmt.Errorf("messages getting error: %w", err)
 	}
 

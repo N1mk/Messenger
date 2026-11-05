@@ -23,12 +23,15 @@ func (u *Usecase) DeleteChat(ctx context.Context, input dto.DeleteChatInput) (ou
 
 	if ok, err := u.isUserInChat(input.UserID, input.ChatID); !ok {
 		if err != nil {
-			return dto.DeleteChatOutput{}, fmt.Errorf("user check error: %w", err)
+			u.l.LogError(fmt.Sprintf("user membership check error: %s", err.Error()))
+			return dto.DeleteChatOutput{}, fmt.Errorf("user membership check error: %w", err)
 		}
+		u.l.LogError(fmt.Sprintf("user in not in the chat: %s", domain.ErrUserIsNotInChat.Error()))
 		return dto.DeleteChatOutput{}, domain.ErrUserIsNotInChat
 	}
 
 	if err := u.r.RemoveChat(input.ChatID); err != nil {
+		u.l.LogError(fmt.Sprintf("chat removing error: %s", err.Error()))
 		return dto.DeleteChatOutput{}, fmt.Errorf("chat removing error: %w", err)
 	}
 

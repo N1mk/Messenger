@@ -22,6 +22,7 @@ func (u *Usecase) GetChats(ctx context.Context, input dto.GetChatsInput) (output
 
 	user, err := u.r.GetUserByID(input.UserID)
 	if err != nil {
+		u.l.LogError(fmt.Sprintf("user getting error: %s", err.Error()))
 		return dto.GetChatsOutput{}, fmt.Errorf("user getting error: %w", err)
 	}
 

@@ -7,6 +7,7 @@ import (
 	"messenger/internal/domain"
 	"messenger/internal/dto"
 	"messenger/pkg/jwt"
+	"messenger/pkg/logger"
 	sliceoperations "messenger/pkg/slice_operations"
 	"testing"
 )
@@ -39,7 +40,7 @@ func TestDeleteChat(t *testing.T) {
 			fp.Users = test.Users
 			fp.Chats = test.Chats
 
-			uc := NewUsecase(fp, jwt.NewJWT())
+			uc := NewUsecase(fp, &logger.Logger{}, jwt.NewJWT())
 
 			_, err := uc.DeleteChat(context.TODO(), test.Input)
 

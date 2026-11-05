@@ -122,6 +122,13 @@ type Repo interface {
 	ReplaceRefreshToken(newtokenHash []byte, userID int) error
 }
 
+// Logger is a interface which defines logger
+type Logger interface {
+	LogInfo(s string)
+	LogError(s string)
+	LogFatal(s string)
+}
+
 // TokenIssuer is a interface which defines work with JWT tokens
 type TokenIssuer interface {
 	GenerateTokenPair(id int, username string) (accesToken string, refreshToken string, err error)
@@ -133,11 +140,12 @@ type TokenIssuer interface {
 type Usecase struct {
 	r  Repo
 	ti TokenIssuer
+	l  Logger
 }
 
 // NewUscase initializes Usecase and returns pointer on it.
-func NewUsecase(r Repo, ti TokenIssuer) *Usecase {
-	return &Usecase{r: r, ti: ti}
+func NewUsecase(r Repo, l Logger, ti TokenIssuer) *Usecase {
+	return &Usecase{r: r, l: l, ti: ti}
 }
 
 // isUserInChat is a privet Usecase method that checks if the user is in the chat.

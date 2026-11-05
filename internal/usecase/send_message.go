@@ -24,20 +24,24 @@ func (u *Usecase) SendMessage(ctx context.Context, input dto.SendMessageInput) (
 
 	if ok, err := u.isUserInChat(input.UserID, input.ChatID); !ok {
 		if err != nil {
-			return dto.SendMessageOutput{}, fmt.Errorf("user check error: %w", err)
+			u.l.LogError(fmt.Sprintf("user membership check error: %s", err.Error()))
+			return dto.SendMessageOutput{}, fmt.Errorf("user membership check error: %w", err)
 		}
+		u.l.LogError(fmt.Sprintf("user in not in the chat: %s", domain.ErrUserIsNotInChat.Error()))
 		return dto.SendMessageOutput{}, domain.ErrUserIsNotInChat
 	}
 
 	chat, err := u.r.GetChatByID(input.ChatID)
 	if err != nil {
+		u.l.LogError(fmt.Sprintf("chat getting error: %s", err.Error()))
 		return dto.SendMessageOutput{}, fmt.Errorf("chat getting error: %w", err)
 	}
 
 	chat.Messages = append(chat.Messages, domain.Message{ChatID: chat.ID, UserID: input.UserID, Text: input.Text, CreatedAt: time.Now()})
 
 	if err := u.r.UpdateChat(chat); err != nil {
-		return dto.SendMessageOutput{}, fmt.Errorf("chat update error: %w", err)
+		u.l.LogError(fmt.Sprintf("chat updating error: %s", err.Error()))
+		return dto.SendMessageOutput{}, fmt.Errorf("chat updating error: %w", err)
 	}
 
 	return dto.SendMessageOutput{}, nil

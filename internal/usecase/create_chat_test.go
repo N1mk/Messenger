@@ -8,6 +8,7 @@ import (
 	"messenger/internal/dto"
 
 	"messenger/pkg/jwt"
+	"messenger/pkg/logger"
 	sliceoperations "messenger/pkg/slice_operations"
 	"testing"
 )
@@ -37,7 +38,7 @@ func TestCreateChat(t *testing.T) {
 			fp.Users = test.Users
 			fp.Chats = test.Chats
 
-			uc := NewUsecase(fp, jwt.NewJWT())
+			uc := NewUsecase(fp, &logger.Logger{}, jwt.NewJWT())
 
 			_, err := uc.CreateChat(context.TODO(), test.Input)
 

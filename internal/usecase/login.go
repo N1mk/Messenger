@@ -26,20 +26,24 @@ func (u *Usecase) Login(ctx context.Context, input dto.LoginInput) (output dto.L
 
 	user, err := u.r.GetUserByID(input.UserID)
 	if err != nil {
-		return dto.LoginOutput{}, fmt.Errorf("user get error: %w", err)
+		u.l.LogError(fmt.Sprintf("user getting error: %s", err.Error()))
+		return dto.LoginOutput{}, fmt.Errorf("user getting error: %w", err)
 	}
 
 	if err := bcrypt.CompareHashAndPassword(user.PasswordHash, []byte(input.Password)); err != nil {
-		return dto.LoginOutput{}, fmt.Errorf("%w: password hash comparing error: %w", domain.ErrUnauthorized, err)
+		u.l.LogError(fmt.Sprintf("password hash comparing error: %s: %s", err.Error(), domain.ErrUnauthorized.Error()))
+		return dto.LoginOutput{}, fmt.Errorf("%w: password hash comparing error: %w", err, domain.ErrUnauthorized)
 	}
 
 	accesToken, refreshToken, err := u.ti.GenerateTokenPair(user.ID, user.Username)
 	if err != nil {
+		u.l.LogError(fmt.Sprintf("jwt-token pair generation error: %s", err.Error()))
 		return dto.LoginOutput{}, fmt.Errorf("jwt-token pair generation error: %w", err)
 	}
 
 	refreshTokenHash := sha256.Sum256([]byte(refreshToken))
 	if err := u.r.ReplaceRefreshToken(refreshTokenHash[:], input.UserID); err != nil {
+		u.l.LogError(fmt.Sprintf("refresh token replacing error: %s", err.Error()))
 		return dto.LoginOutput{}, fmt.Errorf("refresh token replacing error: %w", err)
 	}
 
