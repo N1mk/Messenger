@@ -4,6 +4,7 @@ import (
 	"errors"
 	"fmt"
 	"messenger/internal/domain"
+	"strconv"
 
 	"gorm.io/gorm"
 )
@@ -35,6 +36,9 @@ func (r *PostgresRepo) updateChatUsers(chat *domain.Chat) error {
 		return fmt.Errorf("chat users selection error: %w", err)
 	}
 
+	var chatIDsDelete string
+	var userIDsDelete string
+
 deleteLoop:
 	for _, id := range usersInChatIDs {
 		for _, user := range chat.Users {
@@ -43,10 +47,24 @@ deleteLoop:
 			}
 		}
 
-		if err := r.db.Exec("DELETE FROM user_chats WHERE chat_id = ? AND user_id = ?", chat.ID, id).Error; err != nil {
-			return fmt.Errorf("user removing from chat error: %w", err)
+		if chatIDsDelete != "" {
+			chatIDsDelete += ", "
+		}
+		chatIDsDelete += strconv.Itoa(chat.ID)
+
+		if userIDsDelete != "" {
+			userIDsDelete += ", "
+		}
+		userIDsDelete += strconv.Itoa(id)
+	}
+
+	if chatIDsDelete != "" && userIDsDelete != "" {
+		if err := r.db.Exec(fmt.Sprintf("DELETE FROM user_chats WHERE chat_id IN (%s) AND user_id IN (%s)", chatIDsDelete, userIDsDelete)).Error; err != nil {
+			return fmt.Errorf("users deleting from chat error: %w", err)
 		}
 	}
+
+	var userChatsAdd string
 
 addLoop:
 	for _, user := range chat.Users {
@@ -56,8 +74,15 @@ addLoop:
 			}
 		}
 
-		if err := r.db.Exec("INSERT INTO user_chats (chat_id, user_id) VALUES (?, ?)", chat.ID, user.ID).Error; err != nil {
-			return fmt.Errorf("user adding to chat error: %w", err)
+		if userChatsAdd != "" {
+			userChatsAdd += ", "
+		}
+		userChatsAdd += fmt.Sprintf("(%s, %s)", strconv.Itoa(chat.ID), strconv.Itoa(user.ID))
+	}
+
+	if userChatsAdd != "" {
+		if err := r.db.Exec(fmt.Sprintf("INSERT INTO user_chats (chat_id, user_id) VALUES %s", userChatsAdd)).Error; err != nil {
+			return fmt.Errorf("users adding to chat error: %w", err)
 		}
 	}
 
@@ -71,20 +96,8 @@ func (r *PostgresRepo) updateChatMessages(chat *domain.Chat) error {
 		return fmt.Errorf("chat messages selection error: %w", err)
 	}
 
-	//Потом добавить удаление сообщений
-	/*deleteLoop:
-	for _, messageInChat := range messagesInChat {
-		for _, newMessage := range chat.Messages {
-			if messageInChat == newMessage {
-				continue deleteLoop
-			}
-		}
-
-		if err := r.db.Exec("DELETE FROM messages WHERE id = ?", messageInChat.ID).Error; err != nil {
-			return fmt.Errorf("message deleting error: %w", err)
-		}
-	}
-	*/
+	var valueBoxes string
+	values := make([]interface{}, 0)
 
 addLoop:
 	for _, newMessage := range chat.Messages {
@@ -94,8 +107,17 @@ addLoop:
 			}
 		}
 
-		if err := r.db.Exec("INSERT INTO messages (chat_id, user_id, text, created_at) VALUES (?, ?, ?, ?)", newMessage.ChatID, newMessage.UserID, newMessage.Text, newMessage.CreatedAt).Error; err != nil {
-			return fmt.Errorf("message adding to chat error: %w", err)
+		if valueBoxes != "" {
+			valueBoxes += ", "
+		}
+
+		valueBoxes += "(?, ?, ?, ?)"
+		values = append(values, newMessage.ChatID, newMessage.UserID, newMessage.Text, newMessage.CreatedAt)
+	}
+
+	if valueBoxes != "" {
+		if err := r.db.Exec(fmt.Sprintf("INSERT INTO messages (chat_id, user_id, text, created_at) VALUES %s", valueBoxes), values...).Error; err != nil {
+			return fmt.Errorf("messages adding to chat error: %w", err)
 		}
 	}
 

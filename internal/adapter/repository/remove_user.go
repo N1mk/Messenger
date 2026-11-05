@@ -10,7 +10,7 @@ import (
 
 // RemoveUser removes user from the users table by id.
 func (r *PostgresRepo) RemoveUser(id int) error {
-	var chatsToRemove []domain.Chat
+	var chatsToRemoveIDs []int
 
 	var user domain.User
 	if err := r.db.Preload("Chats.Users").First(&user, id).Error; err != nil {
@@ -19,7 +19,7 @@ func (r *PostgresRepo) RemoveUser(id int) error {
 
 	for _, chat := range user.Chats {
 		if len(chat.Users) <= 1 {
-			chatsToRemove = append(chatsToRemove, chat)
+			chatsToRemoveIDs = append(chatsToRemoveIDs, chat.ID)
 			continue
 		}
 
@@ -55,9 +55,9 @@ func (r *PostgresRepo) RemoveUser(id int) error {
 		return err
 	}
 
-	for _, chat := range chatsToRemove {
-		if err := r.RemoveChat(chat.ID); err != nil {
-			return fmt.Errorf("chat without users deleting error: %w", err)
+	if len(chatsToRemoveIDs) != 0 {
+		if err := r.db.Delete(&domain.Chat{}, chatsToRemoveIDs).Error; err != nil {
+			return fmt.Errorf("empty chats removing error: %w", err)
 		}
 	}
 
