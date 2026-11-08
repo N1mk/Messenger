@@ -31,18 +31,10 @@ func (u *Usecase) SendMessage(ctx context.Context, input dto.SendMessageInput) (
 		return dto.SendMessageOutput{}, domain.ErrUserIsNotInChat
 	}
 
-	chat, err := u.r.GetChatByID(input.ChatID)
+	message, err := u.r.AddMessage(&domain.Message{ChatID: input.ChatID, UserID: input.UserID, Text: input.Text, CreatedAt: time.Now()})
 	if err != nil {
-		u.l.LogError(fmt.Sprintf("chat getting error: %s", err.Error()))
-		return dto.SendMessageOutput{}, fmt.Errorf("chat getting error: %w", err)
+		return dto.SendMessageOutput{}, fmt.Errorf("message creating error: %w", &err)
 	}
 
-	chat.Messages = append(chat.Messages, domain.Message{ChatID: chat.ID, UserID: input.UserID, Text: input.Text, CreatedAt: time.Now()})
-
-	if err := u.r.UpdateChat(chat); err != nil {
-		u.l.LogError(fmt.Sprintf("chat updating error: %s", err.Error()))
-		return dto.SendMessageOutput{}, fmt.Errorf("chat updating error: %w", err)
-	}
-
-	return dto.SendMessageOutput{}, nil
+	return dto.SendMessageOutput{ID: message.ID}, nil
 }

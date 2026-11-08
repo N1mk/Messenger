@@ -32,7 +32,7 @@ func (u *Usecase) LoginByRefreshToken(ctx context.Context, input dto.LoginByRefr
 
 	if ok, err := u.r.RefreshTokenExists(refreshTokenHash[:]); !ok {
 		if err != nil {
-			u.l.LogError(fmt.Sprintf("refresh token exsist check error error: %s", err.Error()))
+			u.l.LogError(fmt.Sprintf("refresh token exsist check error: %s", err.Error()))
 			return dto.LoginByRefreshTokenOutput{}, fmt.Errorf("refresh token exist check error: %w", err)
 		}
 		u.l.LogError(fmt.Sprintf("refresh token doesn't exist: %s", domain.ErrUnauthorized.Error()))
@@ -58,7 +58,7 @@ func (u *Usecase) LoginByRefreshToken(ctx context.Context, input dto.LoginByRefr
 
 	newRefreshTokenHash := sha256.Sum256([]byte(refreshToken))
 
-	if err := u.r.ReplaceRefreshToken(newRefreshTokenHash[:], input.UserID); err != nil {
+	if err := u.r.ReplaceRefreshToken(&domain.RefreshToken{TokenHash: newRefreshTokenHash[:], UserID: input.UserID}); err != nil {
 		u.l.LogError(fmt.Sprintf("refresh token replacing error: %s", err.Error()))
 		return dto.LoginByRefreshTokenOutput{}, fmt.Errorf("refresh token replacing error: %w", err)
 	}

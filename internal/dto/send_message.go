@@ -10,4 +10,5 @@ type SendMessageInput struct {
 
 // SendMessageOutput is a data transfer structure defining contract between controller and usecase
 type SendMessageOutput struct {
+	ID int `json:"id"`
 }

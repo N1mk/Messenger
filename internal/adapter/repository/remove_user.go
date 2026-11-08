@@ -8,7 +8,7 @@ import (
 	"gorm.io/gorm"
 )
 
-// RemoveUser removes user from the users table by id.
+// RemoveUser removes user (domain.User) with given id from the users table. If user with given id not found RemoveUser returns domain.ErrNotFound.
 func (r *PostgresRepo) RemoveUser(id int) error {
 	var chatsToRemoveIDs []int
 

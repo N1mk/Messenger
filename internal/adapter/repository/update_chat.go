@@ -9,7 +9,7 @@ import (
 	"gorm.io/gorm"
 )
 
-// UpdateChat updates chat with correct id.
+// UpdateChat updates all non-related fields of chat (domain.Chat) with id = chat.ID. If chat with id = chat.ID not found UpdateChat returns domain.ErrNotFound.
 func (r *PostgresRepo) UpdateChat(chat *domain.Chat) error {
 	if err := r.db.Session(&gorm.Session{FullSaveAssociations: true}).Model(&domain.Chat{}).Where("id = ?", chat.ID).Updates(&domain.Chat{OwnerID: chat.OwnerID, Name: chat.Name}).Error; err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
@@ -96,7 +96,7 @@ func (r *PostgresRepo) updateChatMessages(chat *domain.Chat) error {
 		return fmt.Errorf("chat messages selection error: %w", err)
 	}
 
-	var valueBoxes string
+	var placeholders string
 	values := make([]interface{}, 0)
 
 addLoop:
@@ -107,16 +107,16 @@ addLoop:
 			}
 		}
 
-		if valueBoxes != "" {
-			valueBoxes += ", "
+		if placeholders != "" {
+			placeholders += ", "
 		}
 
-		valueBoxes += "(?, ?, ?, ?)"
+		placeholders += "(?, ?, ?, ?)"
 		values = append(values, newMessage.ChatID, newMessage.UserID, newMessage.Text, newMessage.CreatedAt)
 	}
 
-	if valueBoxes != "" {
-		if err := r.db.Exec(fmt.Sprintf("INSERT INTO messages (chat_id, user_id, text, created_at) VALUES %s", valueBoxes), values...).Error; err != nil {
+	if placeholders != "" {
+		if err := r.db.Exec(fmt.Sprintf("INSERT INTO messages (chat_id, user_id, text, created_at) VALUES %s", placeholders), values...).Error; err != nil {
 			return fmt.Errorf("messages adding to chat error: %w", err)
 		}
 	}

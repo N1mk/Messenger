@@ -31,7 +31,7 @@ func (u *Usecase) Signup(ctx context.Context, input dto.SignupInput) (output dto
 
 	user := domain.User{Username: input.Username, PasswordHash: passwordHash, Email: input.Email}
 
-	newUser, err := u.r.CreateUser(user)
+	newUser, err := u.r.AddUser(&user)
 	if err != nil {
 		u.l.LogError(fmt.Sprintf("user creation error: %s", err.Error()))
 		return dto.SignupOutput{}, fmt.Errorf("user creation error: %w", err)
@@ -45,7 +45,7 @@ func (u *Usecase) Signup(ctx context.Context, input dto.SignupInput) (output dto
 
 	refreshTokenHash := sha256.Sum256([]byte(refreshToken))
 
-	if err := u.r.CreateRefreshToken(refreshTokenHash[:], newUser.ID); err != nil {
+	if _, err := u.r.AddRefreshToken(&domain.RefreshToken{TokenHash: refreshTokenHash[:], UserID: newUser.ID}); err != nil {
 		u.l.LogError(fmt.Sprintf("refresh token creating error: %s", err.Error()))
 		return dto.SignupOutput{}, fmt.Errorf("refresh token creating error: %w", err)
 	}

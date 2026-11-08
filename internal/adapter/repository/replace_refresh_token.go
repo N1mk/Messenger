@@ -2,15 +2,16 @@ package repository
 
 import (
 	"fmt"
+	"messenger/internal/domain"
 )
 
-// ReplaceRefreshToken replaces the old user refresh token with the new one in transaction in the refresh_tokens table.
-func (r *PostgresRepo) ReplaceRefreshToken(newtokenHash []byte, userID int) error {
-	if err := r.RemoveRefreshToken(userID); err != nil {
+// ReplaceRefreshToken replaces refresh token of user with id = userID. If user with id = userID not found ReplaceRefreshToken returns domain.NotFound.
+func (r *PostgresRepo) ReplaceRefreshToken(newToken *domain.RefreshToken) error {
+	if err := r.RemoveRefreshToken(newToken.UserID); err != nil {
 		return fmt.Errorf("refresh token removing error: %w", err)
 	}
 
-	if err := r.CreateRefreshToken(newtokenHash, userID); err != nil {
+	if _, err := r.AddRefreshToken(newToken); err != nil {
 		return fmt.Errorf("refresh token creating error: %w", err)
 	}
 
