@@ -33,7 +33,7 @@ func (u *Usecase) SendMessage(ctx context.Context, input dto.SendMessageInput) (
 
 	message, err := u.r.AddMessage(&domain.Message{ChatID: input.ChatID, UserID: input.UserID, Text: input.Text, CreatedAt: time.Now()})
 	if err != nil {
-		return dto.SendMessageOutput{}, fmt.Errorf("message creating error: %w", &err)
+		return dto.SendMessageOutput{}, fmt.Errorf("message creating error: %w", err)
 	}
 
 	return dto.SendMessageOutput{ID: message.ID}, nil
