@@ -55,7 +55,7 @@ func TestUpdateAccount(t *testing.T) {
 				rm.EXPECT().Rollback()
 			}
 
-			rm.EXPECT().UpdateUser(tt.UpdateUserWantedUser).Return(tt.UpdateUserReturningError)
+			rm.EXPECT().UpdateUser(gomock.Cond(test.CheckUserIDAndNameAndEmail(tt.UpdateUserWantedUser))).Return(tt.UpdateUserReturningError)
 
 			log, _ := logger.NewLogger("", "")
 
