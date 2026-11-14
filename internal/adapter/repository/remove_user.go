@@ -34,7 +34,7 @@ func (r *PostgresRepo) RemoveUser(id int) error {
 
 			chat.OwnerID = newOwner.ID
 
-			if err := r.UpdateChat(&chat); err != nil {
+			if err := r.UpdateChat(chat); err != nil {
 				return fmt.Errorf("chat owner changing error: %w", err)
 			}
 		}

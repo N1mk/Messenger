@@ -58,10 +58,10 @@ func (u *Usecase) LoginByRefreshToken(ctx context.Context, input dto.LoginByRefr
 
 	newRefreshTokenHash := sha256.Sum256([]byte(refreshToken))
 
-	if err := u.r.ReplaceRefreshToken(&domain.RefreshToken{TokenHash: newRefreshTokenHash[:], UserID: input.UserID}); err != nil {
+	if err := u.r.ReplaceRefreshToken(domain.RefreshToken{TokenHash: newRefreshTokenHash[:], UserID: input.UserID}); err != nil {
 		u.l.LogError(fmt.Sprintf("refresh token replacing error: %s", err.Error()))
 		return dto.LoginByRefreshTokenOutput{}, fmt.Errorf("refresh token replacing error: %w", err)
 	}
 
-	return dto.LoginByRefreshTokenOutput{ID: user.ID, AccesToken: accesToken, RefreshToken: refreshToken}, nil
+	return dto.LoginByRefreshTokenOutput{AccesToken: accesToken, RefreshToken: refreshToken}, nil
 }

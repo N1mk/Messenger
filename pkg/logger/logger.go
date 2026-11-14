@@ -42,8 +42,6 @@ func NewLogger(logFilePath string, oldLogsDirPath string) (*Logger, error) {
 
 	dl.logger = slog.New(slog.NewTextHandler(file, nil))
 
-	dl.LogInfo("App started!")
-
 	return dl, nil
 }
 

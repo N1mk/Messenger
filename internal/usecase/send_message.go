@@ -31,7 +31,7 @@ func (u *Usecase) SendMessage(ctx context.Context, input dto.SendMessageInput) (
 		return dto.SendMessageOutput{}, domain.ErrUserIsNotInChat
 	}
 
-	message, err := u.r.AddMessage(&domain.Message{ChatID: input.ChatID, UserID: input.UserID, Text: input.Text, CreatedAt: time.Now()})
+	message, err := u.r.AddMessage(domain.Message{ChatID: input.ChatID, UserID: input.UserID, Text: input.Text, CreatedAt: time.Now()})
 	if err != nil {
 		return dto.SendMessageOutput{}, fmt.Errorf("message creating error: %w", err)
 	}

@@ -41,7 +41,7 @@ func (u *Usecase) UpdateChat(ctx context.Context, input dto.UpdateChatInput) (ou
 		users[i] = *user
 	}
 
-	if err := u.r.UpdateChat(&domain.Chat{ID: input.ChatID, OwnerID: input.OwnerID, Name: input.Name, Users: users}); err != nil {
+	if err := u.r.UpdateChat(domain.Chat{ID: input.ChatID, OwnerID: input.OwnerID, Name: input.Name, Users: users}); err != nil {
 		u.l.LogError(fmt.Sprintf("chat updating error: %s", err.Error()))
 		return dto.UpdateChatOutput{}, fmt.Errorf("chat updating error: %w", err)
 	}

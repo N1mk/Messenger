@@ -10,7 +10,7 @@ import (
 )
 
 // UpdateChat updates all non-related fields of chat (domain.Chat) with id = chat.ID. If chat with id = chat.ID not found UpdateChat returns domain.ErrNotFound.
-func (r *PostgresRepo) UpdateChat(chat *domain.Chat) error {
+func (r *PostgresRepo) UpdateChat(chat domain.Chat) error {
 	if err := r.db.Session(&gorm.Session{FullSaveAssociations: true}).Model(&domain.Chat{}).Where("id = ?", chat.ID).Updates(&domain.Chat{OwnerID: chat.OwnerID, Name: chat.Name}).Error; err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			return fmt.Errorf("chat basic fields updating error: %w", domain.ErrNotFound)
@@ -18,11 +18,11 @@ func (r *PostgresRepo) UpdateChat(chat *domain.Chat) error {
 		return fmt.Errorf("chat basic fields updating error: %w", err)
 	}
 
-	if err := r.updateChatUsers(chat); err != nil {
+	if err := r.updateChatUsers(&chat); err != nil {
 		return fmt.Errorf("chat users updating error: %w", err)
 	}
 
-	if err := r.updateChatMessages(chat); err != nil {
+	if err := r.updateChatMessages(&chat); err != nil {
 		return fmt.Errorf("chat messages updating error: %w", err)
 	}
 

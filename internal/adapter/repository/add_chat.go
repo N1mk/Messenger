@@ -6,7 +6,7 @@ import (
 )
 
 // AddChat adds new chat (domain.Chat) into the chats table.
-func (r *PostgresRepo) AddChat(chat *domain.Chat) (*domain.Chat, error) {
+func (r *PostgresRepo) AddChat(chat domain.Chat) (*domain.Chat, error) {
 	var chatID int
 
 	if err := r.db.Raw("INSERT INTO chats (owner_id, name) VALUES (?, ?) RETURNING id", chat.OwnerID, chat.Name).Scan(&chatID).Error; err != nil {
@@ -32,5 +32,5 @@ func (r *PostgresRepo) AddChat(chat *domain.Chat) (*domain.Chat, error) {
 		return nil, fmt.Errorf("user adding to chat error: %w", err)
 	}
 
-	return chat, nil
+	return &chat, nil
 }

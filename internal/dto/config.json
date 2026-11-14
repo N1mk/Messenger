@@ -19,7 +19,6 @@
       "Password string `json:\"password\" validate:\"required,min=6,max=72,ascii\"`"
     ],
     "outputFields": [
-      "ID int `json:\"id\"`",
       "AccesToken string `json:\"accesToken\"`",
       "RefreshToken string `json:\"refreshToken\"`"
     ]
@@ -31,7 +30,6 @@
       "RefreshToken string `json:\"refresh_token\"`"
     ],
     "outputFields": [
-      "ID int `json:\"id\"`",
       "AccesToken string `json:\"accesToken\"`",
       "RefreshToken string `json:\"refreshToken\"`"
     ]
@@ -54,7 +52,8 @@
       "PageSize int `json:\"page_size\"`"
     ],
     "outputFields": [
-      "Messages []*domain.Message `json:\"messages\" gorm:\"type:jsonb\"`"
+      "Messages []*domain.Message `json:\"messages\" gorm:\"type:jsonb\"`",
+      "LastMessageID int `json:\"last_message_id\"`"
     ]
   },
   {

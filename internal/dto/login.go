@@ -9,7 +9,6 @@ type LoginInput struct {
 
 // LoginOutput is a data transfer structure defining contract between controller and usecase
 type LoginOutput struct {
-	ID           int    `json:"id"`
 	AccesToken   string `json:"accesToken"`
 	RefreshToken string `json:"refreshToken"`
 }

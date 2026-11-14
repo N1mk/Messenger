@@ -9,7 +9,7 @@ import (
 )
 
 // AddMessage adds new message (domain.Message) into the chat (domain.Chat) wiht id = message.ChatID. If chat with id = message.ChatID not found the AddMessage returns domain.ErrNotFound.
-func (r *PostgresRepo) AddMessage(message *domain.Message) (*domain.Message, error) {
+func (r *PostgresRepo) AddMessage(message domain.Message) (*domain.Message, error) {
 	if err := r.db.Model(&domain.Chat{}).First(message.ChatID).Error; err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			return nil, fmt.Errorf("chat not found: %w", domain.ErrNotFound)
@@ -17,9 +17,9 @@ func (r *PostgresRepo) AddMessage(message *domain.Message) (*domain.Message, err
 		return nil, fmt.Errorf("chat exist check error: %w", err)
 	}
 
-	if err := r.db.Create(message).Error; err != nil {
+	if err := r.db.Create(&message).Error; err != nil {
 		return nil, err
 	}
 
-	return message, nil
+	return &message, nil
 }

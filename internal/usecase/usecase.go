@@ -81,16 +81,16 @@ type Repo interface {
 	Commit()
 
 	// AddUser adds new user (domain.User) into the storage.
-	AddUser(user *domain.User) (*domain.User, error)
+	AddUser(user domain.User) (*domain.User, error)
 
 	// AddChat adds new chat (domain.Chat) into the storage.
-	AddChat(chat *domain.Chat) (*domain.Chat, error)
+	AddChat(chat domain.Chat) (*domain.Chat, error)
 
 	// AddMessage adds new message (domain.Message) into the chat (domain.Chat) wiht id = message.ChatID. If chat with id = message.ChatID not found the AddMessage returns domain.ErrNotFound.
-	AddMessage(message *domain.Message) (*domain.Message, error)
+	AddMessage(message domain.Message) (*domain.Message, error)
 
 	// AddRefreshToken adds new refresh token (domain.RefreshToken) into the storage.
-	AddRefreshToken(token *domain.RefreshToken) (*domain.RefreshToken, error)
+	AddRefreshToken(token domain.RefreshToken) (*domain.RefreshToken, error)
 
 	// GetUserByID recives user's id and returns *domain.User with same id or domain.ErrNotFound if user is not found.
 	GetUserByID(id int) (*domain.User, error)
@@ -101,17 +101,17 @@ type Repo interface {
 	// GetChatByID recives user's id and returns *domain.Chat with same id or domain.ErrNotFound if user is not found.
 	GetChatByID(id int) (*domain.Chat, error)
 
-	// GetChatMessages returns slice of pageSize messages starting starting with lastID (domain.Message) from chat with id = chatID. If chat with id = chatID not found GetChatMessages returns 	domain.ErrNotFound.
-	GetChatMessages(chatID int, lastID int, pageSize int) ([]*domain.Message, error)
+	// GetChatMessages returns slice of pageSize messages (messages) starting starting with lastID (domain.Message) from chat with id = chatID and last message id (newLastID). If all message have been readen from chat returns -1 in newLastID. If chat with id = chatID not found GetChatMessages returns domain.ErrNotFound.
+	GetChatMessages(chatID int, lastID int, pageSize int) (messages []*domain.Message, newLastID int, err error)
 
 	// UpdateUser updates all non-related fields of user (domain.User) with id = user.ID. If user with id = user.ID not found UpdateUser returns domain.ErrNotFound.
-	UpdateUser(user *domain.User) error
+	UpdateUser(user domain.User) error
 
 	// UpdateChat updates all non-related fields of chat (domain.Chat) with id = chat.ID. If chat with id = chat.ID not found UpdateChat returns domain.ErrNotFound.
-	UpdateChat(chat *domain.Chat) error
+	UpdateChat(chat domain.Chat) error
 
 	// UpdateMessage updates all non-related fields of message (domain.Message) with id = message.ID. If message with id = message.ID not found UpdateMessage returns domain.ErrNotFound.
-	UpdateMessage(message *domain.Message) error
+	UpdateMessage(message domain.Message) error
 
 	// RemoveUser removes user (domain.User) with given id from the storage. If user with given id not found RemoveUser returns domain.ErrNotFound.
 	RemoveUser(id int) error
@@ -129,51 +129,7 @@ type Repo interface {
 	RefreshTokenExists(tokenHash []byte) (bool, error)
 
 	// ReplaceRefreshToken replaces refresh token of user with id = userID. If user with id = userID not found ReplaceRefreshToken returns domain.NotFound.
-	ReplaceRefreshToken(token *domain.RefreshToken) error
-
-	/*
-		// GetUserByID selects user from the users table by id.
-		GetUserByID(id int) (*domain.User, error)
-
-		// GetUserByName selects user from the users table by name.
-		GetUserByName(username string) (*domain.User, error)
-
-		// СreateUser creates new element in the users table.
-		CreateUser(user domain.User) (*domain.User, error)
-
-		// RemoveUser removes user from the users table by id.
-		RemoveUser(id int) error
-
-		// UpdateUser updates user with correct id.
-		UpdateUser(user *domain.User) error
-
-		// GetChatByID selects chat from the chats table by id.
-		GetChatByID(id int) (*domain.Chat, error)
-
-		// СreateChat creates new element in the chats table.
-		CreateChat(chat domain.Chat) (*domain.Chat, error)
-
-		// RemoveChat removes chat from the chats table by id.
-		RemoveChat(id int) error
-
-		// UpdateChat updates chat with correct id.
-		UpdateChat(chat *domain.Chat) error
-
-		// GetMessages selects all messages from the messages table with correct chat id.
-		GetMessages(chatID int, lastID int, pageSize int) ([]*domain.Message, error)
-
-		// RefreshTokenExists checks if refresh token exists in the refresh_tokens table.
-		RefreshTokenExists(tokenHash []byte) (ok bool, err error)
-
-		// СreateRefreshToken creates new element in the refresh_tokens table.
-		CreateRefreshToken(tokenHash []byte, userID int) error
-
-		// RemoveRefreshToken removes refresh token from refresh_tokens table.
-		RemoveRefreshToken(userID int) error
-
-		// ReplaceRefreshToken replaces the old user refresh token with the new one in transaction in the refresh_tokens table.
-		ReplaceRefreshToken(newtokenHash []byte, userID int) error
-	*/
+	ReplaceRefreshToken(token domain.RefreshToken) error
 }
 
 // Logger is a interface which defines logger
