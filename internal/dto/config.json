@@ -111,5 +111,30 @@
       "UserID int `json:\"user_id\" validate:\"required\"`"
     ],
     "outputFields": []
+  },
+  {
+    "name": "listen to messages",
+    "inputFields": [
+      "UserID int `json:\"user_id\" validate:\"required\"`",
+      "Request domain.Request `json:\"request\" validate:\"required\"`"
+    ],
+    "outputFields": []
+  },
+  {
+    "name": "add user to chat",
+    "inputFields": [
+      "UserID int `json:\"user_id\" validate:\"required\"`",
+      "ChatID int `json:\"chat_id\" validate:\"required\"`"
+    ],
+    "outputFields": []
+  },
+  {
+    "name": "add chat invite",
+    "inputFields": [
+      "UserID int `json:\"user_id\" validate:\"required\"`",
+      "InvitedID int `json:\"user_id\" validate:\"required\"`",
+      "ChatID int `json:\"chat_id\" validate:\"required\"`"
+    ],
+    "outputFields": []
   }
 ]

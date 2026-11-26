@@ -4,6 +4,7 @@ package repository
 import (
 	"context"
 	"fmt"
+	"messenger/internal/usecase"
 	"messenger/migrations"
 	"os"
 
@@ -11,15 +12,16 @@ import (
 	"gorm.io/gorm"
 )
 
-// PostgresRepo implements PostgresInterface and containts *gorm.DB for work with postgres databases.
+// PostgresRepo implements the Repo interface and wroks with postgres databases.
 type PostgresRepo struct {
 	db    *gorm.DB
 	oldDB *gorm.DB
+	mb    usecase.MessageBroker
 }
 
 // NewPostgres initializes Postgres.
 // The function returns pointer on Postgres struct and error.
-func NewPostgres(dsn string) (*PostgresRepo, error) {
+func NewPostgres(dsn string, mb usecase.MessageBroker) (*PostgresRepo, error) {
 	if dsn == "" {
 		dsn = os.Getenv("DEFAULT_DSN")
 		if dsn == "" {
@@ -41,29 +43,29 @@ func NewPostgres(dsn string) (*PostgresRepo, error) {
 		return nil, fmt.Errorf("migrations running error: %w", err)
 	}
 
-	return &PostgresRepo{db: db}, nil
+	return &PostgresRepo{db: db, mb: mb}, nil
 }
 
 // Saves db into oldDB and begins transaction in db
-func (r *PostgresRepo) Begin(ctx context.Context) {
-	currentDB := *r.db
-	r.oldDB = &currentDB
+func (pr *PostgresRepo) Begin(ctx context.Context) {
+	currentDB := *pr.db
+	pr.oldDB = &currentDB
 
-	r.db = r.db.WithContext(ctx).Begin()
+	pr.db = pr.db.WithContext(ctx).Begin()
 }
 
 // Rollbacks transaction and changes db to oldDB
-func (r *PostgresRepo) Rollback() {
-	r.db.Rollback()
+func (pr *PostgresRepo) Rollback() {
+	pr.db.Rollback()
 
-	oldDB := *r.oldDB
-	r.db = &oldDB
+	oldDB := *pr.oldDB
+	pr.db = &oldDB
 }
 
 // Rollbacks transaction and changes db to oldDB
-func (r *PostgresRepo) Commit() {
-	r.db.Commit()
+func (pr *PostgresRepo) Commit() {
+	pr.db.Commit()
 
-	oldDB := *r.oldDB
-	r.db = &oldDB
+	oldDB := *pr.oldDB
+	pr.db = &oldDB
 }

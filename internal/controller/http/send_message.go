@@ -68,10 +68,9 @@ func (c *HTTPController) SendMessage(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	w.WriteHeader(http.StatusCreated)
+
 	w.Header().Set("Content-Type", "application/json")
-
-	w.WriteHeader(http.StatusOK)
-
 	if err := json.NewEncoder(w).Encode(output); err != nil {
 		http.Error(w, fmt.Sprintf("encoding error: %s", err.Error()), http.StatusInternalServerError)
 		return

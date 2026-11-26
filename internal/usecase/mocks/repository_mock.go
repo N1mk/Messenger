@@ -56,6 +56,20 @@ func (mr *MockRepoMockRecorder) AddChat(chat any) *gomock.Call {
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "AddChat", reflect.TypeOf((*MockRepo)(nil).AddChat), chat)
 }
 
+// AddChatInvite mocks base method.
+func (m *MockRepo) AddChatInvite(invite domain.ChatInvite) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "AddChatInvite", invite)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// AddChatInvite indicates an expected call of AddChatInvite.
+func (mr *MockRepoMockRecorder) AddChatInvite(invite any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "AddChatInvite", reflect.TypeOf((*MockRepo)(nil).AddChatInvite), invite)
+}
+
 // AddMessage mocks base method.
 func (m *MockRepo) AddMessage(message domain.Message) (*domain.Message, error) {
 	m.ctrl.T.Helper()
@@ -99,6 +113,20 @@ func (m *MockRepo) AddUser(user domain.User) (*domain.User, error) {
 func (mr *MockRepoMockRecorder) AddUser(user any) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "AddUser", reflect.TypeOf((*MockRepo)(nil).AddUser), user)
+}
+
+// AddUserToChat mocks base method.
+func (m *MockRepo) AddUserToChat(userID, chatID int) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "AddUserToChat", userID, chatID)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// AddUserToChat indicates an expected call of AddUserToChat.
+func (mr *MockRepoMockRecorder) AddUserToChat(userID, chatID any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "AddUserToChat", reflect.TypeOf((*MockRepo)(nil).AddUserToChat), userID, chatID)
 }
 
 // Begin mocks base method.
@@ -184,6 +212,21 @@ func (m *MockRepo) GetUserByName(username string) (*domain.User, error) {
 func (mr *MockRepoMockRecorder) GetUserByName(username any) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetUserByName", reflect.TypeOf((*MockRepo)(nil).GetUserByName), username)
+}
+
+// GetUserChatInvites mocks base method.
+func (m *MockRepo) GetUserChatInvites(userID int) ([]*domain.ChatInvite, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetUserChatInvites", userID)
+	ret0, _ := ret[0].([]*domain.ChatInvite)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// GetUserChatInvites indicates an expected call of GetUserChatInvites.
+func (mr *MockRepoMockRecorder) GetUserChatInvites(userID any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetUserChatInvites", reflect.TypeOf((*MockRepo)(nil).GetUserChatInvites), userID)
 }
 
 // RefreshTokenExists mocks base method.

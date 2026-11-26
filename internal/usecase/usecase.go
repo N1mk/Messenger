@@ -69,9 +69,25 @@ type UsecaseInterface interface {
 	// It returns all messages from chat.
 	// If the uesr is not membered in the chat, method returns dto.ErrUserIsNotInChat.
 	GetMessages(ctx context.Context, input dto.GetMessagesInput) (dto.GetMessagesOutput, error)
+
+	// AddUserToChat implements the add_user_to_chat endpoint on the business layer.
+	// The method receives dto.AddUserToChatInput and context.Context and returns dto.AddUserToChatOutput and error.
+	// It adds user to chat and makes him listen the chat messages.
+	AddUserToChat(ctx context.Context, input dto.AddUserToChatInput) (dto.AddUserToChatOutput, error)
+
+	// ListenToMessages implements the listen_messages endpoint on the busines layer.
+	// The method recievs dto.ListenToMessagesInput and context.Context and returns dto.ListenToMessagesOutpuy and error.
+	// It establishes the two-way connection whith the user, which sends notifications on every chat message.
+	ListenToMessages(ctx context.Context, input dto.ListenToMessagesInput) (dto.ListenToMessagesOutput, error)
+
+	// AddChatInvite implements the add_chat_invite endpoint on the busines layer.
+	// The method recievs dto.AddChatInviteInput and context.Context and returns dto.AddChatInviteOutput and error.
+	// It checks if user with id = userID in chat and adds invite to user with id = InvitedID.
+	// If user with id = userID is not in chat it returns domain.ErrUserIsNotInChat.
+	AddChatInvite(ctx context.Context, input dto.AddChatInviteInput) (dto.AddChatInviteOutput, error)
 }
 
-// Repo defines all methods that usecase need from repo.
+// Repo is an interface, which defines repository for data storing
 type Repo interface {
 	// Begins transaction
 	Begin(ctx context.Context)
@@ -92,6 +108,12 @@ type Repo interface {
 	// AddRefreshToken adds new refresh token (domain.RefreshToken) into the storage.
 	AddRefreshToken(token domain.RefreshToken) (*domain.RefreshToken, error)
 
+	// AddChatInvite adds new chat invite (domain.ChatInvite) into the storage.
+	AddChatInvite(invite domain.ChatInvite) error
+
+	// AddUserToChat adds user with id = userID to chat with id = chatID. If user with id = userID or chat with id = chatID not found AddUserToChat returns domain.ErrNotFound.
+	AddUserToChat(userID int, chatID int) error
+
 	// GetUserByID recives user's id and returns *domain.User with same id or domain.ErrNotFound if user is not found.
 	GetUserByID(id int) (*domain.User, error)
 
@@ -103,6 +125,9 @@ type Repo interface {
 
 	// GetChatMessages returns slice of pageSize messages (messages) starting starting with lastID (domain.Message) from chat with id = chatID and last message id (newLastID). If all message have been readen from chat returns -1 in newLastID. If chat with id = chatID not found GetChatMessages returns domain.ErrNotFound.
 	GetChatMessages(chatID int, lastID int, pageSize int) (messages []*domain.Message, newLastID int, err error)
+
+	// GetUserChatInvites returns slice of all user's chat invites. If user with id = userID not found GetUserChatInvites returns domain.ErrNotFound.
+	GetUserChatInvites(userID int) (invites []*domain.ChatInvite, err error)
 
 	// UpdateUser updates all non-related fields of user (domain.User) with id = user.ID. If user with id = user.ID not found UpdateUser returns domain.ErrNotFound.
 	UpdateUser(user domain.User) error
@@ -132,14 +157,20 @@ type Repo interface {
 	ReplaceRefreshToken(token domain.RefreshToken) error
 }
 
-// Logger is a interface which defines logger
+// MessageBorker is an interface which defiens message broker
+type MessageBroker interface {
+	SendMessage(ctx context.Context, chadID int, text string) error
+	MakeUserListenChats(ctx context.Context, request domain.Request, userID int, chats []*domain.Chat) error
+}
+
+// Logger is an interface which defines logger
 type Logger interface {
 	LogInfo(s string)
 	LogError(s string)
 	LogFatal(s string)
 }
 
-// TokenIssuer is a interface which defines work with JWT tokens
+// TokenIssuer is an interface which defines work with JWT tokens
 type TokenIssuer interface {
 	GenerateTokenPair(id int, username string) (accesToken string, refreshToken string, err error)
 	ParseAccesToken(accesToken string) (id int, username string, err error)
@@ -149,13 +180,14 @@ type TokenIssuer interface {
 // Usecase is a default implementation of the UsecaseInterface.
 type Usecase struct {
 	r  Repo
+	mb MessageBroker
 	ti TokenIssuer
 	l  Logger
 }
 
 // NewUscase initializes Usecase and returns pointer on it.
-func NewUsecase(r Repo, l Logger, ti TokenIssuer) *Usecase {
-	return &Usecase{r: r, l: l, ti: ti}
+func NewUsecase(r Repo, mb MessageBroker, l Logger, ti TokenIssuer) *Usecase {
+	return &Usecase{r: r, mb: mb, l: l, ti: ti}
 }
 
 // isUserInChat is a privet Usecase method that checks if the user is in the chat.

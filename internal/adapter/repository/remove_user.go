@@ -9,13 +9,13 @@ import (
 )
 
 // RemoveUser removes user (domain.User) with given id from the users table. If user with given id not found RemoveUser returns domain.ErrNotFound.
-func (r *PostgresRepo) RemoveUser(id int) error {
-	var chatsToRemoveIDs []int
-
+func (pr *PostgresRepo) RemoveUser(id int) error {
 	var user domain.User
-	if err := r.db.Preload("Chats.Users").First(&user, id).Error; err != nil {
+	if err := pr.db.Preload("Chats.Users").First(&user, id).Error; err != nil {
 		return fmt.Errorf("user getting error: %w", err)
 	}
+
+	var chatsToRemoveIDs []int
 
 	for _, chat := range user.Chats {
 		if len(chat.Users) <= 1 {
@@ -34,21 +34,21 @@ func (r *PostgresRepo) RemoveUser(id int) error {
 
 			chat.OwnerID = newOwner.ID
 
-			if err := r.UpdateChat(chat); err != nil {
+			if err := pr.UpdateChat(chat); err != nil {
 				return fmt.Errorf("chat owner changing error: %w", err)
 			}
 		}
 	}
 
-	if err := r.db.Exec("DELETE FROM user_chats WHERE user_id = ?", id).Error; err != nil {
+	if err := pr.db.Exec("DELETE FROM user_chats WHERE user_id = ?", id).Error; err != nil {
 		return fmt.Errorf("chats constraint deleting error: %w", err)
 	}
 
-	if err := r.db.Exec("DELETE FROM refresh_tokens WHERE user_id = ?", id).Error; err != nil {
+	if err := pr.db.Exec("DELETE FROM refresh_tokens WHERE user_id = ?", id).Error; err != nil {
 		return fmt.Errorf("refresh tokens constraint deleting error: %w", err)
 	}
 
-	if err := r.db.Delete(&domain.User{}, id).Error; err != nil {
+	if err := pr.db.Delete(&domain.User{}, id).Error; err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			return domain.ErrNotFound
 		}
@@ -56,7 +56,7 @@ func (r *PostgresRepo) RemoveUser(id int) error {
 	}
 
 	if len(chatsToRemoveIDs) != 0 {
-		if err := r.db.Delete(&domain.Chat{}, chatsToRemoveIDs).Error; err != nil {
+		if err := pr.db.Delete(&domain.Chat{}, chatsToRemoveIDs).Error; err != nil {
 			return fmt.Errorf("empty chats removing error: %w", err)
 		}
 	}

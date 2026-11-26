@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	messagebroker "messenger/internal/adapter/messageBroker"
 	postgres "messenger/internal/adapter/repository"
 	"messenger/internal/controller/http"
 	"messenger/internal/usecase"
@@ -32,7 +33,9 @@ func main() {
 		os.Exit(1)
 	}
 
-	r, err := postgres.NewPostgres("")
+	mb := messagebroker.NewDefaultMessageBroker("localhost:6379", "", 0, l)
+
+	r, err := postgres.NewPostgres("", mb)
 	if err != nil {
 		l.LogFatal(fmt.Sprintf("FATAL ERROR: postgres initialization error: %s\n", err.Error()))
 		os.Exit(1)
@@ -40,12 +43,14 @@ func main() {
 
 	j := jwt.NewJWT()
 
-	uc := usecase.NewUsecase(r, l, j)
+	uc := usecase.NewUsecase(r, mb, l, j)
 
-	hc := http.NewHTTPController(uc)
+	hc := http.NewHTTPController(uc, l)
 
 	hc.UseMiddleware(j.IdentifyMiddleware)
 	hc.DefindEndpoints()
+
+	l.LogInfo("App started!")
 
 	hc.ListenAndServe("localhost:8088")
 }

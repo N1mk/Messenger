@@ -5,11 +5,18 @@ package http
 
 import (
 	"messenger/internal/usecase"
+	"messenger/pkg/logger"
 	"net/http"
 
 	"github.com/go-chi/chi"
 	"github.com/go-playground/validator/v10"
 )
+
+// HTTPRequest implements domain.Request and stores params of http handler (http.ResponseWriter and *http.Request)
+type HTTPRequest struct {
+	ResponseWriter http.ResponseWriter
+	Request        *http.Request
+}
 
 // HTTPControllerInterfece defines all handler methods.
 type HTTPControllerInterface interface {
@@ -56,18 +63,31 @@ type HTTPControllerInterface interface {
 	// DeleteAccount implements the delete_account endpoint on the controller layer.
 	// The method parses request structure and calls usecase.Usecase.DeleteAccount().
 	DeleteAccount(w http.ResponseWriter, r *http.Request)
+
+	// ListenToMessages implements the listen_to_messages endpoint on the controller layer.
+	// The method parses request structure and calls usecase.Usecase.ListenToMessages().
+	ListenToMessages(w http.ResponseWriter, r *http.Request)
+
+	// AddUserToChat implements the add_user_to_chat endpoint on the controller layer.
+	// The method parses request structure and calls usecase.Usecase.AddUserToChat().
+	AddUserToChat(w http.ResponseWriter, r *http.Request)
+
+	// AddChatInvite implements the add_chat_invite endpoint on the controller layer.
+	// The method parses request structure and calls usecase.Usecase.AddChatInvite().
+	AddChatInvite(w http.ResponseWriter, r *http.Request)
 }
 
 // HTTPController is a default implementation of HTTPControllerInterface.
 type HTTPController struct {
 	r  *chi.Mux
-	v  *validator.Validate
 	uc usecase.UsecaseInterface
+	v  *validator.Validate
+	l  *logger.Logger
 }
 
 // NewHTTPController initializes HTTPController and returns pointer on it.
-func NewHTTPController(uc *usecase.Usecase) *HTTPController {
-	return &HTTPController{r: chi.NewRouter(), v: validator.New(validator.WithRequiredStructEnabled()), uc: uc}
+func NewHTTPController(uc *usecase.Usecase, l *logger.Logger) *HTTPController {
+	return &HTTPController{r: chi.NewRouter(), v: validator.New(validator.WithRequiredStructEnabled()), uc: uc, l: l}
 }
 
 // DefineEndpoint is a method for definding all endpoints in chi router.
@@ -83,6 +103,9 @@ func (c *HTTPController) DefindEndpoints() {
 	c.r.Put("/users", c.UpdateAccount)
 	c.r.Delete("/chats/{chatID}", c.DeleteChat)
 	c.r.Delete("/users", c.DeleteAccount)
+	c.r.Get("/listen_to_messages", c.ListenToMessages)
+	c.r.Post("/chats/{chatID}/add_user", c.AddUserToChat)
+	c.r.Post("/chats/{chatID}/add_invite", c.AddChatInvite)
 
 }
 

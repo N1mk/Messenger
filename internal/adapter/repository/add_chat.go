@@ -6,10 +6,10 @@ import (
 )
 
 // AddChat adds new chat (domain.Chat) into the chats table.
-func (r *PostgresRepo) AddChat(chat domain.Chat) (*domain.Chat, error) {
+func (pr *PostgresRepo) AddChat(chat domain.Chat) (*domain.Chat, error) {
 	var chatID int
 
-	if err := r.db.Raw("INSERT INTO chats (owner_id, name) VALUES (?, ?) RETURNING id", chat.OwnerID, chat.Name).Scan(&chatID).Error; err != nil {
+	if err := pr.db.Raw("INSERT INTO chats (owner_id, name) VALUES (?, ?) RETURNING id", chat.OwnerID, chat.Name).Scan(&chatID).Error; err != nil {
 		return nil, err
 	}
 
@@ -28,7 +28,7 @@ func (r *PostgresRepo) AddChat(chat domain.Chat) (*domain.Chat, error) {
 		values = append(values, chat.ID, user.ID)
 	}
 
-	if err := r.db.Exec(fmt.Sprintf("INSERT INTO user_chats (chat_id, user_id) VALUES %s", placeholders), values...).Error; err != nil {
+	if err := pr.db.Exec(fmt.Sprintf("INSERT INTO user_chats (chat_id, user_id) VALUES %s", placeholders), values...).Error; err != nil {
 		return nil, fmt.Errorf("user adding to chat error: %w", err)
 	}
 

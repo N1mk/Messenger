@@ -7,6 +7,11 @@ import (
 
 var UnknownTestErr = errors.New("unknown test error")
 
+// TestRequest implements domain.Request and stores tast field named Wanted for data transport verification
+type TestRequest struct {
+	Wanted string
+}
+
 func CheckUserNameAndEmail(wantedUser domain.User) func(user domain.User) bool {
 	return func(user domain.User) bool {
 		if user.Username == wantedUser.Username && user.Email == wantedUser.Email {

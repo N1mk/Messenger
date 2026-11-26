@@ -113,6 +113,7 @@ func TestSignup(t *testing.T) {
 		t.Run(tt.Name, func(subT *testing.T) {
 			ctrl := gomock.NewController(subT)
 			rm := mocks.NewMockRepo(ctrl)
+			mbm := mocks.NewMockMessageBroker(ctrl)
 			tim := mocks.NewMockTokenIssuer(ctrl)
 
 			rm.EXPECT().Begin(context.TODO())
@@ -135,7 +136,7 @@ func TestSignup(t *testing.T) {
 
 			log, _ := logger.NewLogger("", "")
 
-			u := NewUsecase(rm, log, tim)
+			u := NewUsecase(rm, mbm, log, tim)
 
 			output, err := u.Signup(context.TODO(), tt.Input)
 
