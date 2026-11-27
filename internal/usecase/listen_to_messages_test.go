@@ -26,7 +26,7 @@ func TestListenToMessages(t *testing.T) {
 
 		ExpectMakeUserListenChats         bool
 		MakeUserListenChatsWantedRequest  domain.Request
-		MakeUserListenChatsWantedUser     *domain.User
+		MakeUserListenChatsWantedUserID   int
 		MakeUserListenChatsWantedChats    []*domain.Chat
 		MakeUserListenChatsReturningError error
 	}{
@@ -40,7 +40,7 @@ func TestListenToMessages(t *testing.T) {
 			GetUserByIDReturningError:         nil,
 			ExpectMakeUserListenChats:         true,
 			MakeUserListenChatsWantedRequest:  test.TestRequest{Wanted: "wanted data"},
-			MakeUserListenChatsWantedUser:     &domain.User{ID: 1, Username: "Nimk", Chats: []domain.Chat{domain.Chat{ID: 1, Name: "First chat"}, domain.Chat{ID: 2, Name: "Second chat"}}},
+			MakeUserListenChatsWantedUserID:   1,
 			MakeUserListenChatsWantedChats:    []*domain.Chat{&domain.Chat{ID: 1, Name: "First chat"}, &domain.Chat{ID: 2, Name: "Second chat"}},
 			MakeUserListenChatsReturningError: nil,
 		},
@@ -72,7 +72,7 @@ func TestListenToMessages(t *testing.T) {
 			GetUserByIDReturningError:         nil,
 			ExpectMakeUserListenChats:         true,
 			MakeUserListenChatsWantedRequest:  test.TestRequest{Wanted: "wanted data"},
-			MakeUserListenChatsWantedUser:     &domain.User{ID: 1, Username: "Nimk", Chats: []domain.Chat{domain.Chat{ID: 1, Name: "First chat"}, domain.Chat{ID: 2, Name: "Second chat"}}},
+			MakeUserListenChatsWantedUserID:   1,
 			MakeUserListenChatsWantedChats:    []*domain.Chat{&domain.Chat{ID: 1, Name: "First chat"}, &domain.Chat{ID: 2, Name: "Second chat"}},
 			MakeUserListenChatsReturningError: test.UnknownTestErr,
 		},
@@ -96,7 +96,7 @@ func TestListenToMessages(t *testing.T) {
 			rm.EXPECT().GetUserByID(tt.GetUserByIDWantedID).Return(tt.GetUserByIDReturningUser, tt.GetUserByIDReturningError)
 
 			if tt.ExpectMakeUserListenChats {
-				mbm.EXPECT().MakeUserListenChats(context.TODO(), tt.MakeUserListenChatsWantedRequest, tt.MakeUserListenChatsWantedUser, tt.MakeUserListenChatsWantedChats).Return(tt.MakeUserListenChatsReturningError)
+				mbm.EXPECT().MakeUserListenChats(context.TODO(), tt.MakeUserListenChatsWantedRequest, tt.MakeUserListenChatsWantedUserID, tt.MakeUserListenChatsWantedChats).Return(tt.MakeUserListenChatsReturningError)
 			}
 
 			log, _ := logger.NewLogger("", "")

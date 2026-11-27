@@ -10,7 +10,16 @@ import (
 // AddUserToChat implements the add_user_to_chat endpoint on the business layer.
 // The method receives dto.AddUserToChatInput and context.Context and returns dto.AddUserToChatOutput and error.
 // It adds user to chat and makes him listen the chat messages.
-func (u *Usecase) AddUserToChat(ctx context.Context, input dto.AddUserToChatInput) (dto.AddUserToChatOutput, error) {
+func (u *Usecase) AddUserToChat(ctx context.Context, input dto.AddUserToChatInput) (output dto.AddUserToChatOutput, err error) {
+	u.r.Begin(ctx)
+	defer func() {
+		if err != nil {
+			u.r.Rollback()
+			return
+		}
+		u.r.Commit()
+	}()
+
 	invites, err := u.r.GetUserChatInvites(input.UserID)
 	if err != nil {
 		return dto.AddUserToChatOutput{}, fmt.Errorf("user invites getting error: %w", err)

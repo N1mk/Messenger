@@ -11,7 +11,16 @@ import (
 // The method recievs dto.AddChatInviteInput and context.Context and returns dto.AddChatInviteOutput and error.
 // It checks if user with id = userID in chat and adds invite to user with id = InvitedID.
 // If user with id = userID is not in chat it returns domain.ErrUserIsNotInChat.
-func (u *Usecase) AddChatInvite(ctx context.Context, input dto.AddChatInviteInput) (dto.AddChatInviteOutput, error) {
+func (u *Usecase) AddChatInvite(ctx context.Context, input dto.AddChatInviteInput) (output dto.AddChatInviteOutput, err error) {
+	u.r.Begin(ctx)
+	defer func() {
+		if err != nil {
+			u.r.Rollback()
+			return
+		}
+		u.r.Commit()
+	}()
+
 	if ok, err := u.isUserInChat(input.UserID, input.ChatID); !ok {
 		if err != nil {
 			return dto.AddChatInviteOutput{}, fmt.Errorf("inviter chat chack error: %w", err)

@@ -28,6 +28,11 @@ func TestSendMessage(t *testing.T) {
 		AddMessageWantedMessage    domain.Message
 		AddMessageReturningMessage *domain.Message
 		AddMessageReturningError   error
+
+		ExpectSendMessage         bool
+		SendMessageWantedChatID   int
+		SendMessageWantedText     string
+		SendMessageReturningError error
 	}{
 		{
 			Name:                       "ok",
@@ -41,6 +46,10 @@ func TestSendMessage(t *testing.T) {
 			AddMessageWantedMessage:    domain.Message{ChatID: 1, UserID: 1, Text: "Hello world!"},
 			AddMessageReturningMessage: &domain.Message{ID: 1, ChatID: 1, UserID: 1, Text: "Hello world!"},
 			AddMessageReturningError:   nil,
+			ExpectSendMessage:          true,
+			SendMessageWantedChatID:    1,
+			SendMessageWantedText:      "Hello world!",
+			SendMessageReturningError:  nil,
 		},
 		{
 			Name:                      "get chat by id error not found",
@@ -82,6 +91,23 @@ func TestSendMessage(t *testing.T) {
 			AddMessageReturningMessage: nil,
 			AddMessageReturningError:   test.UnknownTestErr,
 		},
+		{
+			Name:                       "send message unknown error",
+			Input:                      dto.SendMessageInput{UserID: 1, ChatID: 1, Text: "Hello world!"},
+			WantedOutput:               dto.SendMessageOutput{},
+			WantedError:                test.UnknownTestErr,
+			GetChatByIDWantedID:        1,
+			GetChatByIDReturningChat:   &domain.Chat{Users: []domain.User{domain.User{ID: 1}}},
+			GetChatByIDReturningError:  nil,
+			ExpectAddMessage:           true,
+			AddMessageWantedMessage:    domain.Message{ChatID: 1, UserID: 1, Text: "Hello world!"},
+			AddMessageReturningMessage: &domain.Message{ID: 1, ChatID: 1, UserID: 1, Text: "Hello world!"},
+			AddMessageReturningError:   nil,
+			ExpectSendMessage:          true,
+			SendMessageWantedChatID:    1,
+			SendMessageWantedText:      "Hello world!",
+			SendMessageReturningError:  test.UnknownTestErr,
+		},
 	}
 
 	for _, tt := range tests {
@@ -103,6 +129,10 @@ func TestSendMessage(t *testing.T) {
 
 			if tt.ExpectAddMessage {
 				rm.EXPECT().AddMessage(gomock.Cond(test.CheckMessageTextAndAndChatIDAndUserID(tt.AddMessageWantedMessage))).Return(tt.AddMessageReturningMessage, tt.AddMessageReturningError)
+			}
+
+			if tt.ExpectSendMessage {
+				mbm.EXPECT().SendMessage(context.TODO(), tt.SendMessageWantedChatID, tt.SendMessageWantedText).Return(tt.SendMessageReturningError)
 			}
 
 			log, _ := logger.NewLogger("", "")
